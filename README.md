@@ -1,4 +1,4 @@
-# BTEEnhanced (1.12.2) 🍝
+# BTEEnhanced (1.18.2) 🍝
 
 Bukkit plugin created for the BuildtheEarth project to make creating custom forests easier. Uses [Bridson's algorithm](https://sighack.com/post/poisson-disk-sampling-bridsons-algorithm) for poisson disk sampling (randomly picking packed points to place trees at).
 
@@ -32,7 +32,8 @@ Bukkit plugin created for the BuildtheEarth project to make creating custom fore
 **Config:** Look [here](src/main/resources/config.yml)
 
 **Dependencies:**
-- `WorldEdit`
+- `FastAsyncWorldEdit`
+- `SchematicBrushReborn`
 
 ## How to use /wood
 First make a region selection, all selections such as cuboid, poly, and convex work.
