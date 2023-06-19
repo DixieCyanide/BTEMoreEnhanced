@@ -19,18 +19,18 @@
 
 package com.github.vaporrrr.bteenhanced.wood;
 
-import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 
 public class Tree {
-    private final BlockVector blockVector;
+    private final BlockVector3 blockVector;
     private Clipboard clipboard;
 
-    public Tree(BlockVector blockVector) {
+    public Tree(BlockVector3 blockVector) {
         this.blockVector = blockVector;
     }
 
-    public Tree(BlockVector blockVector, Clipboard clipboard) {
+    public Tree(BlockVector3 blockVector, Clipboard clipboard) {
         this.blockVector = blockVector;
         this.clipboard = clipboard;
     }
@@ -47,7 +47,7 @@ public class Tree {
         return (int) blockVector.getZ();
     }
 
-    public BlockVector getBlockVector() {
+    public BlockVector3 getBlockVector() {
         return blockVector;
     }
 

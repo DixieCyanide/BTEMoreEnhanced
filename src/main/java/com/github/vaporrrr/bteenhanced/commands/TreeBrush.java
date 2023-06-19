@@ -31,7 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class TreeBrush implements CommandExecutor {
-    private static final Plugin we = Bukkit.getPluginManager().getPlugin("WorldEdit");
+    private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
@@ -42,21 +42,21 @@ public class TreeBrush implements CommandExecutor {
             commandSender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
             return true;
         }
-        if (Bukkit.getPluginManager().getPlugin("SchematicBrush") == null) {
+        if (Bukkit.getPluginManager().getPlugin("SchematicBrushReborn") == null) {
             commandSender.sendMessage(ChatColor.RED + "Plugin SchematicBrush is not installed.");
             return true;
         }
         if (args.length == 0) {
-            commandSender.sendMessage(ChatColor.RED + "Specify a tree type: " + String.join(", ", treeTypes()));
+            commandSender.sendMessage(ChatColor.RED + "Specify a tree type: " + String.join("; ", treeTypes()));
             return true;
         }
-        Bukkit.dispatchCommand(commandSender, "/schbr trees/" + String.join("/", args) + "/*@** -place:bottom -yoff:2");
+        Bukkit.dispatchCommand(commandSender, "schbr $astAsyncWorldEdit/schematics/newtrees/" + String.join("/", args) + "/*@*!* -place:bottom -yoff:1");
         return true;
     }
 
     //TODO: Add ability to see options/folders in every folder, not just "trees/"
     public static ArrayList<String> treeTypes() {
-        File folder = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + "trees");
+        File folder = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + "newtrees");
         ArrayList<String> treeTypes = new ArrayList<>();
         File[] files = folder.listFiles();
         if (!folder.exists() || files == null) {

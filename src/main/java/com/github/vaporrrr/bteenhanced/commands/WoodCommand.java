@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class WoodCommand implements CommandExecutor {
-    private static final Plugin we = Bukkit.getPluginManager().getPlugin("WorldEdit");
+    private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
@@ -46,22 +46,22 @@ public class WoodCommand implements CommandExecutor {
             return true;
         }
         Player player = (Player) commandSender;
-        com.sk89q.worldedit.entity.Player p = new BukkitPlayer((WorldEditPlugin) we, null, player);
+        com.sk89q.worldedit.entity.Player p = new BukkitPlayer((WorldEditPlugin) we, player);
         if (args.length == 0) {
-            p.printError("Specify a schematic name.");
+            commandSender.sendMessage(ChatColor.RED + "Specify a schematic name.");
             return false;
         }
         if (args.length == 1) {
-            p.printError("Specify the block you want trees to be placed above.");
+            commandSender.sendMessage(ChatColor.RED + "Specify the block you want trees to be placed above.");
             return false;
         }
         // If flags
         Wood wood;
         if (args.length >= 3) {
             ArrayList<String> flags = new ArrayList<>(Arrays.asList(args).subList(2, args.length));
-            wood = new Wood(p, args[0], args[1], flags);
+            wood = new Wood(p, commandSender, args[0], args[1], flags);
         } else {
-            wood = new Wood(p, args[0], args[1]);
+            wood = new Wood(p, commandSender, args[0], args[1]);
         }
         wood.execute();
         return true;
