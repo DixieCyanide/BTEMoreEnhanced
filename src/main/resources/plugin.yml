@@ -1,10 +1,10 @@
 ---
-author: VapoR
+author: DixieCyanide
 main: ${project.groupId}.${project.artifactId}.${project.name}
 name: ${project.name}
 version: ${project.version}
 depend:
-  - WorldEdit
+  - FastAsyncWorldEdit
 softdepend:
   - SchematicBrush
 commands:
@@ -14,11 +14,11 @@ commands:
     aliases:
       - /wood
       - /w
-    permission: bteenhanced.region.wood
-  bteenhanced-reload:
+    permission: btemoreenhanced.region.wood
+  btemoreenhanced-reload:
     description: Reload config
-    usage: /bteenhanced-reload
-    permission: bteenhanced.reload
+    usage: /btemoreenhanced-reload
+    permission: btemoreenhanced.reload
   treebrush:
     description: Easy to use brush specifically for trees on top of //schbr (Schematic Brush Plugin)
     usage: /treebrush {type} [size] [thickness]
@@ -33,7 +33,7 @@ commands:
       - dell
       - dellast
       - /dellast
-    permission: bteenhanced.selection.dellast
+    permission: btemoreenhanced.selection.dellast
   /delp:
     description: Deletes the [num] point in (currently poly2d only) selection
     usage: //delp [num]
@@ -41,38 +41,38 @@ commands:
       - delp
       - delpoint
       - /delpoint
-    permission: bteenhanced.selection.delpoint
+    permission: btemoreenhanced.selection.delpoint
 permissions:
-  bteenhanced.*:
+  btemoreenhanced.*:
     description: Wildcard permission
     children:
-      bteenhanced.region: true
-      bteenhanced.region.wood: true
-      bteenhanced.reload: true
-      bteenhanced.selection: true
-      bteenhanced.selection.dellast: true
-      bteenhanced.selection.delpoint: true
-  bteenhanced.admin.*:
+      btemoreenhanced.region: true
+      btemoreenhanced.region.wood: true
+      btemoreenhanced.reload: true
+      btemoreenhanced.selection: true
+      btemoreenhanced.selection.dellast: true
+      btemoreenhanced.selection.delpoint: true
+  btemoreenhanced.admin.*:
     description: All "admin" perms
     children:
-      bteenhanced.admin.reload: true
-      bteenhanced.admin.allschematics: true
-  bteenhanced.admin.reload:
+      btemoreenhanced.admin.reload: true
+      btemoreenhanced.admin.allschematics: true
+  btemoreenhanced.admin.reload:
     description: Reload config
-  bteenhanced.admin.allschematics:
+  btemoreenhanced.admin.allschematics:
     description: Allows people to use all files in schematics folder
-  bteenhanced.region.*:
+  btemoreenhanced.region.*:
     description: All region commands
     children:
-      bteenhanced.region.wood: true
-  bteenhanced.region.wood:
+      btemoreenhanced.region.wood: true
+  btemoreenhanced.region.wood:
     description: Allows usage of /wood
-  bteenhanced.selection.*:
+  btemoreenhanced.selection.*:
     description: Allows usage of all selection related commands
     children:
-      bteenhanced.selection.dellast: true
-      bteenhanced.selection.delpoint: true
-  bteenhanced.selection.dellast:
+      btemoreenhanced.selection.dellast: true
+      btemoreenhanced.selection.delpoint: true
+  btemoreenhanced.selection.dellast:
     description: Allows usage of //dell
-  bteenhanced.selection.delpoint:
+  btemoreenhanced.selection.delpoint:
     description: Allows usage of //delp

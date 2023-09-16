@@ -1,6 +1,6 @@
 /*
- * BTEEnhanced, a building tool
- * Copyright 2022 (C) vaporrrr
+ * BTEMoreEnhanced, a building tool
+ * Copyright 2022 (C) DixieCyanide
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
  */
 
 
-package com.github.vaporrrr.bteenhanced.wood;
+package com.github.dixiecyanide.btemoreenhanced.wood;
 
-import com.github.vaporrrr.bteenhanced.BTEEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.entity.Player;
@@ -74,7 +74,7 @@ public class Wood {
     private BlockVector3 minPoint;
     private final Random random = new Random();
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
-    private static final Plugin plugin = BTEEnhanced.getPlugin(BTEEnhanced.class);
+    private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
 
     public Wood(Player p, CommandSender commandSender, String schematicLoc, String target, ArrayList<String> flags) {
         this.p = p;

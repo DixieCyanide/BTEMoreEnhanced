@@ -1,6 +1,6 @@
 /*
- * BTEEnhanced, a building tool
- * Copyright 2022 (C) vaporrrr
+ * BTEMoreEnhanced, a building tool
+ * Copyright 2022 (C) DixieCyanide
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 
 
-package com.github.vaporrrr.bteenhanced.commands;
+package com.github.dixiecyanide.btemoreenhanced.commands;
 
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.IncompleteRegionException;

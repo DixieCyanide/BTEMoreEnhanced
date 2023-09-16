@@ -1,6 +1,6 @@
 /*
- * BTEEnhanced, a building tool
- * Copyright 2022 (C) vaporrrr
+ * BTEMoreEnhanced, a building tool
+ * Copyright 2022 (C) DixieCyanide
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
  */
 
 
-package com.github.vaporrrr.bteenhanced.commands;
+package com.github.dixiecyanide.btemoreenhanced.commands;
 
-import com.github.vaporrrr.bteenhanced.BTEEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,10 +28,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class ReloadConfig implements CommandExecutor {
-    private static final Plugin plugin = BTEEnhanced.getPlugin(BTEEnhanced.class);
+    private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        if (!commandSender.hasPermission("bteenhanced.reload") && !commandSender.isOp()) {
+        if (!commandSender.hasPermission("btemoreenhanced.reload") && !commandSender.isOp()) {
             return false;
         }
         if (!(commandSender instanceof Player)) {

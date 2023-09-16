@@ -1,9 +1,9 @@
-# BTEEnhanced (1.18.2) 🍝
+# BTEMoreEnhanced (FAWE edition) 🍝
 
 Bukkit plugin created for the BuildtheEarth project to make creating custom forests easier. Uses [Bridson's algorithm](https://sighack.com/post/poisson-disk-sampling-bridsons-algorithm) for poisson disk sampling (randomly picking packed points to place trees at).
 
 
-[![](https://bstats.org/signatures/bukkit/BTEEnhanced.svg)](https://bstats.org/plugin/bukkit/BTEEnhanced "BTEEnhanced on bStats")
+[![](https://bstats.org/signatures/bukkit/BTEEenhanced.svg)](https://bstats.org/plugin/bukkit/BTEEnhanced "BTEEnhanced on bStats")
 
 **Commands:**
 <details>
@@ -11,7 +11,7 @@ Bukkit plugin created for the BuildtheEarth project to make creating custom fore
     *(Aliases: //wood, //w)* More info in "How to use /wood"
 </details>
 <details>
-    <summary>/treebrush {type} [size] [thickness]</summary>
+    <summary>/treebrush {type} {height/size} {size/thickness} [thickness]</summary>
     *(Aliases: /tbr, //tbr, /treebr)* Easy to use brush specifically for trees on top of //schbr ([Schematic Brush Plugin](https://github.com/mikeprimm/SchematicBrush)). Ex: /tbr oak M thin
 </details>
 <details>
@@ -62,14 +62,14 @@ All are **optional**
 ## Examples
 These schematic paths are for trees from the BTE tree pack.
 <details>
-    <summary>/wood trees/oak/M/* 2,251:0</summary>
+    <summary>/wood trees/oak/M/* grass_block,moss_block</summary>
     Uses all schematics in `plugins/WorldEdit/trees/oak/M/`, including subdirectories. 2 is the block ID for grass blocks, and 251:0 is the block ID for white concrete, meaning trees will only be placed above grass and white concrete.
 </details>
 <details>
-    <summary>/wood trees/snow/* 4</summary>
+    <summary>/wood trees/snow/* cobblestone</summary>
     Uses all schematics in `plugins/WorldEdit/trees/snow/`, including subdirectories. In this case since the BTE tree pack has S,M,L snow trees, it will use all three sizes. 4 is the block data for planks, but since there are blocks that have the same block data of 4 (4 in 4:2 for ex.), and different IDs (2 of 4:2 for ex.), not including a ":" when typing "4" will include all blocks with data 4. Oak planks, jungle planks, etc.
 </details>
 <details>
-    <summary>/wood trees/snow/S/Pine_Snowy_Small !35:5 -dontRotate -r:6</summary>
+    <summary>/wood trees/snow/S/Pine_Snowy_Small !lime_wool -dontRotate -r:6</summary>
     Uses only the Pine_Snowy_Small.schematic. Trees are pasted above all blocks except 35:5, which is green wool. `-dontRotate` prevents a random rotation from being applied to each tree. `-r:6` overrides the radius to 6.
 </details>

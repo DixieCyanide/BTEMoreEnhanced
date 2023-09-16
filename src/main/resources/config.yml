@@ -5,3 +5,4 @@
 MaxSchemSize: 5120
 MaxTries: 60
 UpdateCheckEnabled: true
+TreepackFolder: ""

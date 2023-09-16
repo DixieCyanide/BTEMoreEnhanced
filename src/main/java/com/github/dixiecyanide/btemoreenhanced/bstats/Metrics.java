@@ -1,4 +1,4 @@
-package com.github.vaporrrr.bteenhanced.bstats;
+package com.github.dixiecyanide.btemoreenhanced.bstats;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

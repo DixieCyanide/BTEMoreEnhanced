@@ -1,6 +1,6 @@
 /*
- * BTEEnhanced, a building tool
- * Copyright 2022 (C) vaporrrr
+ * BTEMoreEnhanced, a building tool
+ * Copyright 2022 (C) DixieCyanide
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
  */
 
 
-package com.github.vaporrrr.bteenhanced;
+package com.github.dixiecyanide.btemoreenhanced;
 
-import com.github.vaporrrr.bteenhanced.bstats.Metrics;
-import com.github.vaporrrr.bteenhanced.commands.*;
-import com.github.vaporrrr.bteenhanced.update.UpdateChecker;
+import com.github.dixiecyanide.btemoreenhanced.bstats.Metrics;
+import com.github.dixiecyanide.btemoreenhanced.commands.*;
+import com.github.dixiecyanide.btemoreenhanced.update.UpdateChecker;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class BTEEnhanced extends JavaPlugin {
+public class BTEMoreEnhanced extends JavaPlugin {
     @Override
     public void onDisable() {
     }
@@ -32,9 +32,9 @@ public class BTEEnhanced extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        getLogger().info("BTEEnhanced enabled!");
+        getLogger().info("BTEMoreEnhanced enabled!");
         getCommand("wood").setExecutor(new WoodCommand());
-        getCommand("bteenhanced-reload").setExecutor(new ReloadConfig());
+        getCommand("btemoreenhanced-reload").setExecutor(new ReloadConfig());
         getCommand("dellast").setExecutor(new DelLast());
         getCommand("delpoint").setExecutor(new DelPoint());
         getCommand("treebrush").setExecutor(new TreeBrush());
@@ -45,7 +45,7 @@ public class BTEEnhanced extends JavaPlugin {
             Thread updateChecker = new Thread(new UpdateChecker(this));
             updateChecker.start();
         } else {
-            getLogger().info("Update checking is disabled. Check for releases at https://github.com/vaporrrr/BTEEnhanced/releases.");
+            getLogger().info("Update checking is disabled. Check for releases at https://github.com/DixieCyanide/BTEMoreEnhanced/releases.");
         }
     }
 }

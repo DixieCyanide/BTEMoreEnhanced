@@ -1,6 +1,6 @@
 /*
- * BTEEnhanced, a building tool
- * Copyright 2022 (C) vaporrrr
+ * BTEMoreEnhanced, a building tool
+ * Copyright 2022 (C) DixieCyanide
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.github.vaporrrr.bteenhanced.update;
+package com.github.dixiecyanide.btemoreenhanced.update;
 
-import com.github.vaporrrr.bteenhanced.BTEEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import org.bukkit.ChatColor;
 import org.json.JSONArray;
 
@@ -30,23 +30,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 public class UpdateChecker implements Runnable {
-    private final BTEEnhanced bteEnhanced;
+    private final BTEMoreEnhanced bteMoreEnhanced;
     private final Logger logger;
 
-    public UpdateChecker(BTEEnhanced bteEnhanced) {
-        this.bteEnhanced = bteEnhanced;
-        this.logger = bteEnhanced.getLogger();
+    public UpdateChecker(BTEMoreEnhanced bteMoreEnhanced) {
+        this.bteMoreEnhanced = bteMoreEnhanced;
+        this.logger = bteMoreEnhanced.getLogger();
     }
 
     @Override
     public void run() {
         logger.info(ChatColor.GRAY + "-----CHECKING FOR UPDATES-----");
-        String current = cleanVersion(bteEnhanced.getDescription().getVersion());
+        String current = cleanVersion(bteMoreEnhanced.getDescription().getVersion());
         String latest = getLatestVersion();
         logger.info(ChatColor.AQUA + "Current version: " + current);
         logger.info(ChatColor.AQUA + "Latest version: " + latest);
         if (!current.equals(latest)) {
-            logger.info(ChatColor.DARK_RED + "Plugin is not latest! Is it outdated? https://github.com/vaporrrr/BTEEnhanced/releases");
+            logger.info(ChatColor.DARK_RED + "Plugin is not latest! Is it outdated? https://github.com/DixieCyanide/BTEMoreEnhanced/releases");
         } else {
             logger.info(ChatColor.GREEN + "Plugin is up to date.");
         }
@@ -56,7 +56,7 @@ public class UpdateChecker implements Runnable {
     private String getLatestVersion() {
         String latestVersion = "NOT FOUND";
         try {
-            URL url = new URL("https://api.github.com/repos/vaporrrr/bteenhanced/releases");
+            URL url = new URL("https://api.github.com/repos/DixieCyanide/BTEMoreEnhanced/releases");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setRequestProperty("Accept", "application/json");
