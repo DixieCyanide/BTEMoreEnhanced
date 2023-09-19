@@ -38,7 +38,7 @@ public class WoodCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        if (!commandSender.hasPermission("bteenhanced.region.wood") && !commandSender.isOp()) {
+        if (!commandSender.hasPermission("btemoreenhanced.region.wood") && !commandSender.isOp()) {
             return false;
         }
         if (!(commandSender instanceof Player)) {

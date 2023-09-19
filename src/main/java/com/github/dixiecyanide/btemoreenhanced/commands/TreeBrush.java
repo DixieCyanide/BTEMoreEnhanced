@@ -28,17 +28,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
 
+import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
+
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+//import java.util.Arrays;
 import java.util.List;
 
 public class TreeBrush implements TabExecutor {
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
-    List<String> folderList = new ArrayList<>();
+    private static final File folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + "newtrees"); // now only for trees;
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+        SchemBrush schemBrush = new SchemBrush(folderWE, args);
         List<String> schemNames = new ArrayList<>();
         if (!commandSender.hasPermission("schematicbrush.brush.use") && !commandSender.isOp()) {
             return false;
@@ -52,14 +55,12 @@ public class TreeBrush implements TabExecutor {
             return true;
         }
         if (args.length == 0) {
-            commandSender.sendMessage(ChatColor.RED + "Specify a tree type: " + String.join("; ", treeTypesCompleter(args)));
+            commandSender.sendMessage(ChatColor.RED + "Specify a tree type: " + String.join("; ", schemBrush.itemTabCompleter()));
             return true;
         }
-
-        schemNames = argsProcessing(args);
+        schemNames = schemBrush.argsProcessing();
         //commandSender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
-        
-        Bukkit.dispatchCommand(commandSender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1");
+        Bukkit.dispatchCommand(commandSender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
         return true;
     }
 
@@ -68,13 +69,14 @@ public class TreeBrush implements TabExecutor {
         final List<String> completions = new ArrayList<>();
         List<String> treeTypes = new ArrayList<>();
         Integer argsLength = args.length;
-        
+
         if (argsLength > 0 & argsLength < 5) {
             if (argsLength == 1) {
                 args[0] = "";
             }
-            
-            treeTypes = treeTypesCompleter(Arrays.copyOfRange(args, 0, argsLength - 1));
+
+            SchemBrush schemBrush = new SchemBrush(folderWE, args);
+            treeTypes = schemBrush.itemTabCompleter();
             StringUtil.copyPartialMatches(args[argsLength - 1], treeTypes, completions);
             
             if (treeTypes.isEmpty()) {
@@ -84,93 +86,5 @@ public class TreeBrush implements TabExecutor {
             }
         }
         return completions;
-    }
-
-    public static List<String> treeTypesCompleter(String[] args) {
-        File folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + "newtrees");
-        List<File>treeTypesPaths = List.of(new File(""));
-        List<String> treeTypes = new ArrayList<>();
-        
-        for (String arg : args) {
-            List<File>interPaths = new ArrayList<>();
-            if (arg == null || treeTypesPaths.isEmpty()){
-                continue;
-            }
-            if (arg.equals("any")) {
-                treeTypesPaths = collectDirectories(folderWE, treeTypesPaths, arg);
-            } else {
-                for (File treeTypePath : treeTypesPaths) {
-                    interPaths.add(new File(treeTypePath + File.separator + arg));
-                }
-                treeTypesPaths = interPaths;
-            }
-        }
-
-        for (File treeTypePath : treeTypesPaths) {
-            File folder = new File(folderWE + treeTypePath.toString());
-            File[] files = folder.listFiles();
-            
-            if (!folder.exists() || files == null) {
-                continue;
-            }
-            for (File file : files) {
-                if (file.isDirectory() & !treeTypes.contains(file.getName())) {
-                    treeTypes.add(file.getName());
-                }
-            }
-        }
-        
-        return treeTypes;
-    }
-
-    public static List<String> argsProcessing(String[] args) {
-        File folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + "newtrees");
-        List<String>schemNames = new ArrayList<>();
-        List<File>folderPaths = List.of(new File(""));
-        
-        for (String arg : args) {
-            if (arg == null || folderPaths.isEmpty()){
-                continue;
-            }
-            if (arg.equals("any")) {
-                folderPaths = collectDirectories(folderWE, folderPaths, arg);
-                continue;
-            }
-            folderPaths = collectDirectories(folderWE, folderPaths, arg);
-        }
-
-        for (File folder : folderPaths) {
-            File schemFolder = new File(folderWE + folder.toString());
-            File[] files = schemFolder.listFiles();
-
-            for (File schem : files) {
-                if (!schem.isDirectory()) {
-                    schemNames.add(schem.getName().substring(0, schem.getName().length() - 10));
-                }
-            }
-        }
-        
-        return schemNames;
-    }
-
-    public static List<File> collectDirectories(File folderWE, List<File> folderPaths, String arg) {         // move to Utils
-        List<File>itemPaths = new ArrayList<>();
-        for (File folderPath : folderPaths) {
-            File schemPath = new File(folderWE + folderPath.toString());
-            File[] schemPaths = schemPath.listFiles();
-
-            if (!schemPath.exists() || schemPaths == null) {
-                continue;
-            }
-
-            for (File folder : schemPaths) {
-                if (folder.isDirectory() & arg.equals("any")) {                                      
-                    itemPaths.add(new File(folderPath + File.separator + folder.getName()));
-                } else if (folder.isDirectory() & folder.getName().equals(arg)) {
-                    itemPaths.add(new File(folderPath + File.separator + folder.getName()));
-                }
-            }
-        }
-        return itemPaths;
     }
 }

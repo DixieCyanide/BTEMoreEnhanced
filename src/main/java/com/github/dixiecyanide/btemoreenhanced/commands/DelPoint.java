@@ -45,7 +45,7 @@ public class DelPoint implements CommandExecutor {
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        if (!commandSender.hasPermission("bteenhanced.selection.delpoint") && !commandSender.isOp()) {
+        if (!commandSender.hasPermission("btemoreenhanced.selection.delpoint") && !commandSender.isOp()) {
             return false;
         }
         if (!(commandSender instanceof Player)) {
