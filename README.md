@@ -11,8 +11,10 @@ Bukkit plugin created for the BuildtheEarth project to make creating custom fore
     *(Aliases: //wood, //w)* More info in "How to use /wood"
 </details>
 <details>
-    <summary>/treebrush {type} {height/size} {size/thickness} [thickness]</summary>
-    *(Aliases: /tbr, //tbr, /treebr)* Easy to use brush specifically for trees on top of //schbr ([Schematic Brush Plugin](https://github.com/mikeprimm/SchematicBrush)). Ex: /tbr oak M thin
+    <summary>/treebrush {type} {height/size} {size/thickness} [thickness]
+    /treebrush -s {schematicName} </summary>
+    *(Aliases: /tbr, //tbr, /treebr)* Easy to use brush specifically for trees on top of //schbr ([Schematic Brush Plugin](https://github.com/mikeprimm/SchematicBrush)). Ex: /treebr oak M any thin | 
+    Use -s flag if you want to use specific tree. Ex: /treebr -s general01
 </details>
 <details>
     <summary>/bteenhanced-reload</summary>

@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class SchemBrush {
     private final File folderWE;
@@ -33,21 +34,26 @@ public class SchemBrush {
         this.args = args;
     }
 
-
     public List<String> itemTabCompleter () {
         List<File>itemTypesPaths = List.of(new File(""));
         List<String> itemTypes = new ArrayList<>();
-        
 
         for (String arg : Arrays.copyOfRange(args, 0, args.length - 1)) {
             List<File>interPaths = new ArrayList<>();
-
+            
             if (arg == null || itemTypesPaths.isEmpty()){
                 continue;
             }
 
+            if (arg.equals("-s")) {
+                itemTypes = collectSchematics();
+                return itemTypes;
+            } 
+            
             if (arg.equals("any")) {
                 itemTypesPaths = collectDirectories(itemTypesPaths, arg);
+            } else if (arg.indexOf(",") >= 0) {
+                itemTypesPaths = processMuliarg(itemTypesPaths, arg);
             } else {
                 for (File itemTypePath : itemTypesPaths) {
                     interPaths.add(new File(itemTypePath + File.separator + arg));
@@ -77,12 +83,16 @@ public class SchemBrush {
         List<String>schemNames = new ArrayList<>();
         List<File>folderPaths = List.of(new File(""));
         
+        if (args[0].equals("-s")) {
+            return List.of(args[1]);
+        }
+
         for (String arg : args) {
             if (arg == null || folderPaths.isEmpty()){
                 continue;
             }
-            if (arg.equals("any")) {
-                folderPaths = collectDirectories(folderPaths, arg);
+            if (arg.indexOf(",") >= 0) {
+                folderPaths = processMuliarg(folderPaths, arg);
                 continue;
             }
             folderPaths = collectDirectories(folderPaths, arg);
@@ -98,8 +108,19 @@ public class SchemBrush {
                 }
             }
         }
-        
         return schemNames;
+    }
+
+    public List<File> processMuliarg(List<File> itemTypesPaths, String arg) {
+        String[] argParts;
+        List<File>baseitemTypesPaths = itemTypesPaths;
+        itemTypesPaths = new ArrayList<File>();
+        argParts = arg.split(",");
+
+        for (String argPart : argParts) {
+            itemTypesPaths = Stream.concat(itemTypesPaths.stream(), collectDirectories(baseitemTypesPaths, argPart).stream()).toList();
+        }
+        return itemTypesPaths;
     }
 
     // i don't like the fact i'm using same variable names in different functions
@@ -123,5 +144,18 @@ public class SchemBrush {
             }
         }
         return itemPaths;
+    }
+
+    public List<String> collectSchematics() {
+        List<String> schematics = new ArrayList<>();
+        File[] schemFiles = folderWE.listFiles();
+
+        for (File schemFile : schemFiles) {
+            if (!schemFile.isDirectory()) {
+                schematics.add(schemFile.getName().substring(0, schemFile.getName().length() - 10));
+            }
+        }
+
+        return schematics;
     }
 }

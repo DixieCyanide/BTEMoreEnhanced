@@ -28,39 +28,41 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
 
+import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
 
 import java.io.File;
 import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.List;
 
 public class TreeBrush implements TabExecutor {
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
-    private static final File folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + "newtrees"); // now only for trees;
+    private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private static final String treepackFolder = plugin.getConfig().getString("TreepackFolder");
+    private static final File folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + treepackFolder);
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         SchemBrush schemBrush = new SchemBrush(folderWE, args);
         List<String> schemNames = new ArrayList<>();
-        if (!commandSender.hasPermission("schematicbrush.brush.use") && !commandSender.isOp()) {
+        if (!sender.hasPermission("schematicbrush.brush.use") && !sender.isOp()) {
             return false;
         }
-        if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
             return true;
         }
         if (Bukkit.getPluginManager().getPlugin("SchematicBrushReborn") == null) {
-            commandSender.sendMessage(ChatColor.RED + "Plugin SchematicBrush is not installed.");
+            sender.sendMessage(ChatColor.RED + "Plugin SchematicBrush is not installed.");
             return true;
         }
         if (args.length == 0) {
-            commandSender.sendMessage(ChatColor.RED + "Specify a tree type: " + String.join("; ", schemBrush.itemTabCompleter()));
+            sender.sendMessage(ChatColor.RED + "Specify a tree type: " + String.join("; ", schemBrush.itemTabCompleter()));
             return true;
         }
         schemNames = schemBrush.argsProcessing();
-        //commandSender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
-        Bukkit.dispatchCommand(commandSender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
+        // sender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
+        Bukkit.dispatchCommand(sender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
         return true;
     }
 
@@ -70,18 +72,22 @@ public class TreeBrush implements TabExecutor {
         List<String> treeTypes = new ArrayList<>();
         Integer argsLength = args.length;
 
-        if (argsLength > 0 & argsLength < 5) {
-            if (argsLength == 1) {
-                args[0] = "";
-            }
-
+        if (argsLength > 0 & argsLength < 5) {                                  // gonna remove it i think
             SchemBrush schemBrush = new SchemBrush(folderWE, args);
             treeTypes = schemBrush.itemTabCompleter();
+
+            for (Integer i = 0; i < treeTypes.size(); i++) {
+                String treeType = treeTypes.get(i);
+                treeTypes.set(i, args[argsLength - 1].substring(0, args[argsLength - 1].lastIndexOf(",") + 1) + treeType);
+            }
+            
             StringUtil.copyPartialMatches(args[argsLength - 1], treeTypes, completions);
             
             if (treeTypes.isEmpty()) {
                 completions.add("There are no more folders.");
-            } else {
+            } else if (argsLength < 2) {
+                completions.add(0, "-s");
+            } else if (!args[0].equals("-s")){
                 completions.add(0, "any");
             }
         }

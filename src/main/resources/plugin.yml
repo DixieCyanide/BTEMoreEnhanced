@@ -3,6 +3,7 @@ author: DixieCyanide
 main: ${project.groupId}.${project.artifactId}.${project.name}
 name: ${project.name}
 version: ${project.version}
+api-version: '1.13'
 depend:
   - FastAsyncWorldEdit
 softdepend:
