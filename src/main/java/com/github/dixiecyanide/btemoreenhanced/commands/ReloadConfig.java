@@ -20,6 +20,8 @@
 package com.github.dixiecyanide.btemoreenhanced.commands;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemCollector;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -34,12 +36,15 @@ public class ReloadConfig implements CommandExecutor {
         if (!commandSender.hasPermission("btemoreenhanced.reload") && !commandSender.isOp()) {
             return false;
         }
-        if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
-            return true;
-        }
+
         plugin.reloadConfig();
-        commandSender.sendMessage(ChatColor.GOLD + "Config reloaded.");
+        SchemCollector.reloadPlugin();
+
+        if (commandSender instanceof Player) {                                  // just because i want fancy colors here and there 
+            commandSender.sendMessage(ChatColor.DARK_PURPLE + "Plugin reloaded.");
+        } else {
+            commandSender.sendMessage("\033[0;35m" + "Plugin reloaded.");
+        }
         return true;
     }
 }

@@ -19,8 +19,10 @@
 package com.github.dixiecyanide.btemoreenhanced.update;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
-import org.bukkit.ChatColor;
-import org.json.JSONArray;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
+import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -40,17 +42,17 @@ public class UpdateChecker implements Runnable {
 
     @Override
     public void run() {
-        logger.info(ChatColor.GRAY + "-----CHECKING FOR UPDATES-----");
         String current = cleanVersion(bteMoreEnhanced.getDescription().getVersion());
         String latest = getLatestVersion();
-        logger.info(ChatColor.AQUA + "Current version: " + current);
-        logger.info(ChatColor.AQUA + "Latest version: " + latest);
+        logger.info("\033[0;35m" + "-----CHECKING FOR UPDATES-----");
+        logger.info("\033[0;35m" + "Current version: " + current);
+        logger.info("\033[0;35m" + "Latest version: " + latest);
         if (!current.equals(latest)) {
-            logger.info(ChatColor.DARK_RED + "Plugin is not latest! Is it outdated? https://github.com/DixieCyanide/BTEMoreEnhanced/releases");
+            logger.info("\033[0;31m" + "Plugin is not latest! Is it outdated? https://github.com/DixieCyanide/BTEMoreEnhanced/releases");
         } else {
-            logger.info(ChatColor.GREEN + "Plugin is up to date.");
+            logger.info("\033[0;92m" + "Plugin is up to date.");
         }
-        logger.info(ChatColor.GRAY + "------------------------------");
+        logger.info("\033[0;35m" + "------------------------------");
     }
 
     private String getLatestVersion() {
@@ -69,8 +71,8 @@ public class UpdateChecker implements Runnable {
             }
             int code = con.getResponseCode();
             if (code >= 200 && code <= 299) {
-                JSONArray jsonObject = new JSONArray(response.toString());
-                latestVersion = cleanVersion(jsonObject.getJSONObject(0).getString("tag_name"));
+                JSONArray jsonObject = (JSONArray) JSONValue.parse(response.toString());
+                latestVersion = cleanVersion((String) ((JSONObject) jsonObject.get(0)).get("tag_name"));
             } else {
                 logger.severe("Request for latest release not successful. Response code: " + code);
             }

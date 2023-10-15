@@ -25,25 +25,17 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
 
-import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TreeBrush implements TabExecutor {
-    private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
-    private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
-    private static final String treepackFolder = plugin.getConfig().getString("TreepackFolder");
-    private static final File folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + treepackFolder);
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        SchemBrush schemBrush = new SchemBrush(folderWE, args);
+        SchemBrush schemBrush = new SchemBrush(args);
         List<String> schemNames = new ArrayList<>();
         if (!sender.hasPermission("schematicbrush.brush.use") && !sender.isOp()) {
             return false;
@@ -61,6 +53,7 @@ public class TreeBrush implements TabExecutor {
             return true;
         }
         schemNames = schemBrush.argsProcessing();
+
         // sender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
         Bukkit.dispatchCommand(sender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
         return true;
@@ -72,24 +65,30 @@ public class TreeBrush implements TabExecutor {
         List<String> treeTypes = new ArrayList<>();
         Integer argsLength = args.length;
 
-        if (argsLength > 0 & argsLength < 5) {                                  // gonna remove it i think
-            SchemBrush schemBrush = new SchemBrush(folderWE, args);
-            treeTypes = schemBrush.itemTabCompleter();
+        SchemBrush schemBrush = new SchemBrush(args);
+        treeTypes = schemBrush.itemTabCompleter();
 
-            for (Integer i = 0; i < treeTypes.size(); i++) {
-                String treeType = treeTypes.get(i);
-                treeTypes.set(i, args[argsLength - 1].substring(0, args[argsLength - 1].lastIndexOf(",") + 1) + treeType);
+        if (args[argsLength - 1].lastIndexOf(",") >= 0) {                   // multiarg tabcompletion
+            List<String> multiTreeTypes = new ArrayList<>();
+            multiTreeTypes.addAll(treeTypes);
+
+            for (Integer i = 0; i < multiTreeTypes.size(); i++) {                    
+                String multiTreeType = multiTreeTypes.get(i);
+                multiTreeTypes.set(i, args[argsLength - 1].substring(0, args[argsLength - 1].lastIndexOf(",") + 1) + multiTreeType);
             }
-            
-            StringUtil.copyPartialMatches(args[argsLength - 1], treeTypes, completions);
-            
-            if (treeTypes.isEmpty()) {
-                completions.add("There are no more folders.");
-            } else if (argsLength < 2) {
-                completions.add(0, "-s");
-            } else if (!args[0].equals("-s")){
-                completions.add(0, "any");
-            }
+
+            StringUtil.copyPartialMatches(args[argsLength - 1], multiTreeTypes, completions);
+            return completions;
+        }
+
+        StringUtil.copyPartialMatches(args[argsLength - 1], treeTypes, completions);
+        
+        if (treeTypes.isEmpty()) {
+            completions.add("There are no more folders.");
+        } else if (argsLength < 2) {
+            completions.add(0, "-s");
+        } else if (!args[0].equals("-s")){
+            completions.add(0, "any");
         }
         return completions;
     }

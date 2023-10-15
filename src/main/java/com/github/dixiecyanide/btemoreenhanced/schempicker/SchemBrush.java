@@ -19,143 +19,118 @@
 
 package com.github.dixiecyanide.btemoreenhanced.schempicker;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class SchemBrush {
-    private final File folderWE;
     private final String[] args;
+    final List<String> directoies = SchemCollector.getDirectories();
+    final List<String> schematics = SchemCollector.getSchematics();
     
-    public SchemBrush(File folderWE, String[] args) {
-        this.folderWE = folderWE;
+    public SchemBrush(String[] args) {
         this.args = args;
     }
 
     public List<String> itemTabCompleter () {
-        List<File>itemTypesPaths = List.of(new File(""));
+        List<String> schemDirs = directoies;
+        List<String> schems = schematics;
         List<String> itemTypes = new ArrayList<>();
+        String regex = "^";
+        Integer index = 0;
+
+        if (args[0].equals("-s") & args.length < 3) {
+            itemTypes = schems;
+            return itemTypes;
+        }
 
         for (String arg : Arrays.copyOfRange(args, 0, args.length - 1)) {
-            List<File>interPaths = new ArrayList<>();
-            
-            if (arg == null || itemTypesPaths.isEmpty()){
+            index++;
+            if (arg == null || schemDirs.isEmpty()){
                 continue;
             }
 
-            if (arg.equals("-s")) {
-                itemTypes = collectSchematics();
-                return itemTypes;
-            } 
-            
-            if (arg.equals("any")) {
-                itemTypesPaths = collectDirectories(itemTypesPaths, arg);
-            } else if (arg.indexOf(",") >= 0) {
-                itemTypesPaths = processMuliarg(itemTypesPaths, arg);
+            if (arg.indexOf(",") >= 0) {
+                regex = processMultiarg(arg, regex);
+            } else if (arg.equals("any")) {
+                regex += "\\\\.*";
             } else {
-                for (File itemTypePath : itemTypesPaths) {
-                    interPaths.add(new File(itemTypePath + File.separator + arg));
-                }
-                itemTypesPaths = interPaths;
+                regex += String.format("\\\\%s", arg);
             }
+            schemDirs = collectDirectories(schemDirs, regex);
         }
 
-        for (File itemTypePath : itemTypesPaths) {
-            File folder = new File(folderWE + itemTypePath.toString());
-            File[] files = folder.listFiles();
-            
-            if (!folder.exists() || files == null) {
+        for (String schemDir : schemDirs) {
+            schemDir = schemDir.substring(0, schemDir.lastIndexOf("\\"));    // removing schematic name, so it won't appear as possible item type
+            String[] schemDirParts = schemDir.split("\\\\");
+            try {
+                if (!itemTypes.contains(schemDirParts[index + 1])) {
+                    itemTypes.add(schemDirParts[index + 1]);
+                }
+            } catch (Exception e) {
                 continue;
             }
-            for (File file : files) {
-                if (file.isDirectory() & !itemTypes.contains(file.getName())) {
-                    itemTypes.add(file.getName());
-                }
-            }
         }
-        
-        return itemTypes;
+        return itemTypes; 
     }
 
     public List<String> argsProcessing() {
-        List<String>schemNames = new ArrayList<>();
-        List<File>folderPaths = List.of(new File(""));
-        
+        List<String> schemNames = new ArrayList<>();
+        List<String> schemDirs = directoies;
+        String regex = "^";
+
         if (args[0].equals("-s")) {
+            if (args[1].indexOf(",") >= 0) {
+                return List.of(args[1].split(","));
+            }
             return List.of(args[1]);
         }
 
         for (String arg : args) {
-            if (arg == null || folderPaths.isEmpty()){
+            if (arg == null || schemDirs.isEmpty()){
                 continue;
             }
             if (arg.indexOf(",") >= 0) {
-                folderPaths = processMuliarg(folderPaths, arg);
-                continue;
+                regex = processMultiarg(arg, regex);
+            } else if (arg.equals("any")) {
+                regex += "\\\\.*";
+            } else {
+                regex += String.format("\\\\%s", arg);
             }
-            folderPaths = collectDirectories(folderPaths, arg);
+            schemDirs = collectDirectories(schemDirs, regex);
         }
 
-        for (File folder : folderPaths) {
-            File schemFolder = new File(folderWE + folder.toString());
-            File[] files = schemFolder.listFiles();
-
-            for (File schem : files) {
-                if (!schem.isDirectory()) {
-                    schemNames.add(schem.getName().substring(0, schem.getName().length() - 10));
-                }
+        for (String schemDir : schemDirs) {
+            String fullSchemName = schemDir.substring(schemDir.lastIndexOf("\\") + 1);
+            String schemExt = fullSchemName.substring(fullSchemName.lastIndexOf("."));
+            String schemName = fullSchemName.substring(0, fullSchemName.length() - schemExt.length());
+            
+            if (!schemNames.contains(schemName)) {
+                schemNames.add(schemName);
             }
         }
         return schemNames;
     }
 
-    public List<File> processMuliarg(List<File> itemTypesPaths, String arg) {
-        String[] argParts;
-        List<File>baseitemTypesPaths = itemTypesPaths;
-        itemTypesPaths = new ArrayList<File>();
-        argParts = arg.split(",");
+    public List<String> collectDirectories(List<String> schemDirs, String regex) {
+        List<String> fittingSchemDirs = new ArrayList<>();
+        regex += "\\\\.*";
+        
+        for (String schemDir : schemDirs) {
+            if (schemDir.matches(regex)) {
+                fittingSchemDirs.add(schemDir);
+            }
+        }
+        return fittingSchemDirs;
+    }
 
+    public String processMultiarg (String arg, String regex) {
+        String[] argParts = arg.split(",");
+        String regexPart = "(?:";
         for (String argPart : argParts) {
-            itemTypesPaths = Stream.concat(itemTypesPaths.stream(), collectDirectories(baseitemTypesPaths, argPart).stream()).toList();
+            regexPart += String.format("|%s", argPart);
         }
-        return itemTypesPaths;
-    }
-
-    // i don't like the fact i'm using same variable names in different functions
-
-    public List<File> collectDirectories(List<File> folderPaths, String arg) {
-        List<File>itemPaths = new ArrayList<>();
-        for (File folderPath : folderPaths) {
-            File schemPath = new File(folderWE + folderPath.toString());
-            File[] schemPaths = schemPath.listFiles();
-
-            if (!schemPath.exists() || schemPaths == null) {
-                continue;
-            }
-
-            for (File folder : schemPaths) {
-                if (folder.isDirectory() & arg.equals("any")) {                                      
-                    itemPaths.add(new File(folderPath + File.separator + folder.getName()));
-                } else if (folder.isDirectory() & folder.getName().equals(arg)) {
-                    itemPaths.add(new File(folderPath + File.separator + folder.getName()));
-                }
-            }
-        }
-        return itemPaths;
-    }
-
-    public List<String> collectSchematics() {
-        List<String> schematics = new ArrayList<>();
-        File[] schemFiles = folderWE.listFiles();
-
-        for (File schemFile : schemFiles) {
-            if (!schemFile.isDirectory()) {
-                schematics.add(schemFile.getName().substring(0, schemFile.getName().length() - 10));
-            }
-        }
-
-        return schematics;
+        regex += String.format("\\\\%s)", regexPart);
+        return regex;
     }
 }

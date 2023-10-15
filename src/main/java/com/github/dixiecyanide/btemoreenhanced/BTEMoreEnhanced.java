@@ -21,18 +21,19 @@ package com.github.dixiecyanide.btemoreenhanced;
 
 import com.github.dixiecyanide.btemoreenhanced.bstats.Metrics;
 import com.github.dixiecyanide.btemoreenhanced.commands.*;
+import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemCollector;
 import com.github.dixiecyanide.btemoreenhanced.update.UpdateChecker;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BTEMoreEnhanced extends JavaPlugin {
     @Override
     public void onDisable() {
+        getLogger().info("\033[0;35m" + "Goodbye!");
     }
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        getLogger().info("BTEMoreEnhanced enabled!");
         getCommand("wood").setExecutor(new WoodCommand());
         getCommand("btemoreenhanced-reload").setExecutor(new ReloadConfig());
         getCommand("dellast").setExecutor(new DelLast());
@@ -40,12 +41,15 @@ public class BTEMoreEnhanced extends JavaPlugin {
         getCommand("treebrush").setExecutor(new TreeBrush());
         getConfig().options().copyDefaults(true);
         saveConfig();
-        new Metrics(this, 13388);
+        new Metrics(this, 20042);
+        getLogger().info("\033[0;35m" + "Searching schematics...");
+        new SchemCollector();
         if (getConfig().getBoolean("UpdateCheckEnabled")) {
             Thread updateChecker = new Thread(new UpdateChecker(this));
             updateChecker.start();
         } else {
-            getLogger().info("Update checking is disabled. Check for releases at https://github.com/DixieCyanide/BTEMoreEnhanced/releases.");
+            getLogger().info("\033[0;31m" + "Update checking is disabled. Check for releases at https://github.com/DixieCyanide/BTEMoreEnhanced/releases.");
         }
+        getLogger().info("\033[0;92m" + "BTEMoreEnhanced enabled!");
     }
 }

@@ -3,7 +3,7 @@
 Bukkit plugin created for the BuildtheEarth project to make creating custom forests easier. Uses [Bridson's algorithm](https://sighack.com/post/poisson-disk-sampling-bridsons-algorithm) for poisson disk sampling (randomly picking packed points to place trees at).
 
 
-[![](https://bstats.org/signatures/bukkit/BTEEenhanced.svg)](https://bstats.org/plugin/bukkit/BTEEnhanced "BTEEnhanced on bStats")
+[![](https://bstats.org/signatures/bukkit/BTEMoreEnhanced.svg)](https://bstats.org/plugin/bukkit/BTEMoreEnhanced "BTEMoreEnhanced on bStats")
 
 **Commands:**
 <details>
