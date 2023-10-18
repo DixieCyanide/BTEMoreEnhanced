@@ -19,6 +19,7 @@
 
 package com.github.dixiecyanide.btemoreenhanced.schempicker;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,16 +54,16 @@ public class SchemBrush {
             if (arg.indexOf(",") >= 0) {
                 regex = processMultiarg(arg, regex);
             } else if (arg.equals("any")) {
-                regex += "\\\\.*";
+                regex += String.format("\\%s.*", File.separator);
             } else {
-                regex += String.format("\\\\%s", arg);
+                regex += String.format("\\%s%s",File.separator, arg);
             }
             schemDirs = collectDirectories(schemDirs, regex);
         }
 
         for (String schemDir : schemDirs) {
-            schemDir = schemDir.substring(0, schemDir.lastIndexOf("\\"));    // removing schematic name, so it won't appear as possible item type
-            String[] schemDirParts = schemDir.split("\\\\");
+            schemDir = schemDir.substring(0, schemDir.lastIndexOf(File.separator));    // removing schematic name, so it won't appear as possible item type
+            String[] schemDirParts = schemDir.split(String.format("\\%s", File.separator));
             try {
                 if (!itemTypes.contains(schemDirParts[index + 1])) {
                     itemTypes.add(schemDirParts[index + 1]);
@@ -93,15 +94,15 @@ public class SchemBrush {
             if (arg.indexOf(",") >= 0) {
                 regex = processMultiarg(arg, regex);
             } else if (arg.equals("any")) {
-                regex += "\\\\.*";
+                regex += String.format("\\%s.*", File.separator);
             } else {
-                regex += String.format("\\\\%s", arg);
+                regex += String.format("\\%s%s",File.separator, arg);
             }
             schemDirs = collectDirectories(schemDirs, regex);
         }
 
         for (String schemDir : schemDirs) {
-            String fullSchemName = schemDir.substring(schemDir.lastIndexOf("\\") + 1);
+            String fullSchemName = schemDir.substring(schemDir.lastIndexOf(File.separator) + 1);
             String schemExt = fullSchemName.substring(fullSchemName.lastIndexOf("."));
             String schemName = fullSchemName.substring(0, fullSchemName.length() - schemExt.length());
             
@@ -114,7 +115,7 @@ public class SchemBrush {
 
     public List<String> collectDirectories(List<String> schemDirs, String regex) {
         List<String> fittingSchemDirs = new ArrayList<>();
-        regex += "\\\\.*";
+        regex += String.format("\\%s.*", File.separator);
         
         for (String schemDir : schemDirs) {
             if (schemDir.matches(regex)) {
@@ -130,7 +131,7 @@ public class SchemBrush {
         for (String argPart : argParts) {
             regexPart += String.format("|%s", argPart);
         }
-        regex += String.format("\\\\%s)", regexPart);
+        regex += String.format("\\%s%s)",File.separator, regexPart);
         return regex;
     }
 }

@@ -49,7 +49,7 @@ public class TreeBrush implements TabExecutor {
             return true;
         }
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Specify a tree type: " + String.join("; ", schemBrush.itemTabCompleter()));
+            sender.sendMessage(ChatColor.RED + "Specify a tree type.");
             return true;
         }
         schemNames = schemBrush.argsProcessing();

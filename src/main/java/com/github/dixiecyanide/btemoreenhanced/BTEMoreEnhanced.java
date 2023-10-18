@@ -28,7 +28,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class BTEMoreEnhanced extends JavaPlugin {
     @Override
     public void onDisable() {
-        getLogger().info("\033[0;35m" + "Goodbye!");
+        getLogger().info("\033[0;35m" + "Goodbye!" + "\033[0m");
     }
 
     @Override
@@ -42,14 +42,14 @@ public class BTEMoreEnhanced extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         new Metrics(this, 20042);
-        getLogger().info("\033[0;35m" + "Searching schematics...");
+        getLogger().info("\033[0;35m" + "Searching schematics..." + "\033[0m");
         new SchemCollector();
         if (getConfig().getBoolean("UpdateCheckEnabled")) {
             Thread updateChecker = new Thread(new UpdateChecker(this));
             updateChecker.start();
         } else {
-            getLogger().info("\033[0;31m" + "Update checking is disabled. Check for releases at https://github.com/DixieCyanide/BTEMoreEnhanced/releases.");
+            getLogger().info("\033[0;31m" + "Update checking is disabled. Check for releases at https://github.com/DixieCyanide/BTEMoreEnhanced/releases." + "\033[0m");
         }
-        getLogger().info("\033[0;92m" + "BTEMoreEnhanced enabled!");
+        getLogger().info("\033[0;92m" + "BTEMoreEnhanced enabled!" + "\033[0m");
     }
 }

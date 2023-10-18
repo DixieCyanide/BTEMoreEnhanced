@@ -44,15 +44,15 @@ public class UpdateChecker implements Runnable {
     public void run() {
         String current = cleanVersion(bteMoreEnhanced.getDescription().getVersion());
         String latest = getLatestVersion();
-        logger.info("\033[0;35m" + "-----CHECKING FOR UPDATES-----");
-        logger.info("\033[0;35m" + "Current version: " + current);
-        logger.info("\033[0;35m" + "Latest version: " + latest);
+        logger.info("\033[0;35m" + "-----CHECKING FOR UPDATES-----" + "\033[0m");
+        logger.info("\033[0;35m" + "Current version: " + current + "\033[0m");
+        logger.info("\033[0;35m" + "Latest version: " + latest + "\033[0m");
         if (!current.equals(latest)) {
-            logger.info("\033[0;31m" + "Plugin is not latest! Is it outdated? https://github.com/DixieCyanide/BTEMoreEnhanced/releases");
+            logger.info("\033[0;31m" + "Plugin is not latest! Is it outdated? https://github.com/DixieCyanide/BTEMoreEnhanced/releases" + "\033[0m");
         } else {
-            logger.info("\033[0;92m" + "Plugin is up to date.");
+            logger.info("\033[0;92m" + "Plugin is up to date." + "\033[0m");
         }
-        logger.info("\033[0;35m" + "------------------------------");
+        logger.info("\033[0;35m" + "------------------------------" + "\033[0m");
     }
 
     private String getLatestVersion() {

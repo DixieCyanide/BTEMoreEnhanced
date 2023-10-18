@@ -43,7 +43,7 @@ public class ReloadConfig implements CommandExecutor {
         if (commandSender instanceof Player) {                                  // just because i want fancy colors here and there 
             commandSender.sendMessage(ChatColor.DARK_PURPLE + "Plugin reloaded.");
         } else {
-            commandSender.sendMessage("\033[0;35m" + "Plugin reloaded.");
+            commandSender.sendMessage("\033[0;35m" + "Plugin reloaded." + "\033[0m");
         }
         return true;
     }

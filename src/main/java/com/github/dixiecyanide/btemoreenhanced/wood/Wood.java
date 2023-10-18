@@ -30,6 +30,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.AffineTransform;
+import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.PasteBuilder;
@@ -123,6 +124,10 @@ public class Wood {
             region = localSession.getSelection(selectionWorld);
         } catch (IncompleteRegionException ex) {
             commandSender.sendMessage(ChatColor.RED + "Please make a region selection first.");
+            return;
+        }
+        if(!(region instanceof Polygonal2DRegion)) {
+            commandSender.sendMessage(ChatColor.RED + "Currently only poly regions are supported.");
             return;
         }
 
