@@ -23,6 +23,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class SchemBrush {
     private final String[] args;
@@ -52,7 +54,7 @@ public class SchemBrush {
             }
 
             if (arg.indexOf(",") >= 0) {
-                regex = processMultiarg(arg, regex);
+                regex = processMultiarg(arg, regex, true);
             } else if (arg.equals("any")) {
                 regex += String.format("\\%s.*", File.separator);
             } else {
@@ -75,16 +77,28 @@ public class SchemBrush {
         return itemTypes; 
     }
 
-    public List<String> argsProcessing() {
-        List<String> schemNames = new ArrayList<>();
+    // throw error if 0 schematics returned
+    public List<String> argsProcessing(Boolean needFullDirs) {
         List<String> schemDirs = directoies;
         String regex = "^";
 
         if (args[0].equals("-s")) {
-            if (args[1].indexOf(",") >= 0) {
-                return List.of(args[1].split(","));
+            if (!needFullDirs){
+                if (args[1].indexOf(",") >= 0) {
+                    return List.of(args[1].split(","));
+                }
+                return List.of(args[1]);
+            } else {
+                Pattern pattern;
+                if (args[1].indexOf(",") >= 0) {
+                    pattern = Pattern.compile(String.format("^.*%s.*", processMultiarg(args[1], "", needFullDirs)));
+                } else {
+                    pattern = Pattern.compile(String.format("(^.*%s.*)", args[1]));
+                }
+                return schemDirs.stream()
+                    .filter(pattern.asPredicate())
+                    .collect(Collectors.toList());
             }
-            return List.of(args[1]);
         }
 
         for (String arg : args) {
@@ -92,7 +106,7 @@ public class SchemBrush {
                 continue;
             }
             if (arg.indexOf(",") >= 0) {
-                regex = processMultiarg(arg, regex);
+                regex = processMultiarg(arg, regex, needFullDirs);
             } else if (arg.equals("any")) {
                 regex += String.format("\\%s.*", File.separator);
             } else {
@@ -101,16 +115,21 @@ public class SchemBrush {
             schemDirs = collectDirectories(schemDirs, regex);
         }
 
-        for (String schemDir : schemDirs) {
-            String fullSchemName = schemDir.substring(schemDir.lastIndexOf(File.separator) + 1);
-            String schemExt = fullSchemName.substring(fullSchemName.lastIndexOf("."));
-            String schemName = fullSchemName.substring(0, fullSchemName.length() - schemExt.length());
-            
-            if (!schemNames.contains(schemName)) {
-                schemNames.add(schemName);
+        if (needFullDirs) {
+            return schemDirs;
+        } else {
+            List<String> schemNames = new ArrayList<>();
+            for (String schemDir : schemDirs) {
+                String fullSchemName = schemDir.substring(schemDir.lastIndexOf(File.separator) + 1);
+                String schemExt = fullSchemName.substring(fullSchemName.lastIndexOf("."));
+                String schemName = fullSchemName.substring(0, fullSchemName.length() - schemExt.length());
+                
+                if (!schemNames.contains(schemName)) {
+                    schemNames.add(schemName);
+                }
             }
+            return schemNames;
         }
-        return schemNames;
     }
 
     public List<String> collectDirectories(List<String> schemDirs, String regex) {
@@ -125,13 +144,21 @@ public class SchemBrush {
         return fittingSchemDirs;
     }
 
-    public String processMultiarg (String arg, String regex) {
+    public String processMultiarg (String arg, String regex, Boolean needDirPart) {
         String[] argParts = arg.split(",");
         String regexPart = "(?:";
+
         for (String argPart : argParts) {
-            regexPart += String.format("|%s", argPart);
+            regexPart += String.format("%s|", argPart);
         }
-        regex += String.format("\\%s%s)",File.separator, regexPart);
-        return regex;
+
+        regexPart = regexPart.substring(0, regexPart.length() - 1);
+
+        if (!needDirPart) {
+            return regexPart + ")";
+        } else {
+            regex += String.format("\\%s%s)",File.separator, regexPart);
+            return regex;
+        }
     }
 }

@@ -20,11 +20,12 @@
 package com.github.dixiecyanide.btemoreenhanced.wood;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
+
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
@@ -45,17 +46,17 @@ import org.bukkit.ChatColor;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class Wood {
     private static final int N = 2;
     private final Player p;
     private CommandSender commandSender;
-    private final String schematicLoc;
+    private final String[] schemArgs;
+    private List<String> schemDirs;
     private String[] targetBlocks;
     private float radius;
     private float radiusSum;
@@ -76,36 +77,37 @@ public class Wood {
     private final Random random = new Random();
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
     private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private static String treepackFolder = plugin.getConfig().getString("TreepackFolder");
+    private static File folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + treepackFolder);
 
-    public Wood(Player p, CommandSender commandSender, String schematicLoc, String target, ArrayList<String> flags) {
+    public Wood(Player p, CommandSender commandSender, String[] schemArgs, String target, String[] flags) {
         this.p = p;
         this.commandSender = commandSender;
-        this.schematicLoc = schematicLoc;
+        this.schemArgs = schemArgs;
         this.radius = Float.NaN;
         this.editSession = WorldEdit.getInstance().newEditSession(p.getWorld());
         setTargetBlocks(target);
         for (String flag : flags) {
-            if (flag.startsWith("-")) {
-                if (flag.equals("-includeAir")) {
-                    this.ignoreAirBlocks = false;
-                } else if (flag.equals("-dontRotate")) {
-                    this.randomRotation = false;
-                } else if (flag.startsWith("-r:")) {
-                    try {
-                        this.radius = Float.parseFloat(flag.substring(flag.indexOf(':') + 1));
-                    } catch (Exception e) {
-                        commandSender.sendMessage(ChatColor.RED + "Radius is not a number.");
-                        return;
-                    }
+            if (flag.equals("-includeAir")) {
+                this.ignoreAirBlocks = false;
+            } else if (flag.equals("-dontRotate")) {
+                this.randomRotation = false;
+            } else if (flag.startsWith("-r:")) {
+                try {
+                    this.radius = Float.parseFloat(flag.substring(flag.indexOf(':') + 1));
+                } catch (Exception e) {
+                    commandSender.sendMessage(ChatColor.RED + "Radius is not a number.");
+                    return;
                 }
             }
+            
         }
     }
 
-    public Wood(Player p, CommandSender commandSender, String schematicLoc, String target) {
+    public Wood(Player p, CommandSender commandSender, String[] schemArgs, String target) {
         this.p = p;
         this.commandSender = commandSender;
-        this.schematicLoc = schematicLoc;
+        this.schemArgs = schemArgs;
         this.radius = Float.NaN;
         this.editSession = WorldEdit.getInstance().newEditSession(p.getWorld());
         setTargetBlocks(target);
@@ -113,12 +115,13 @@ public class Wood {
 
     public void execute() {
         final long startTime = System.nanoTime();
-        File schematicsFolder = new File(we.getDataFolder() + File.separator + "schematics");
         WorldEdit worldEdit = WorldEdit.getInstance();
         SessionManager manager = worldEdit.getSessionManager();
         LocalSession localSession = manager.get(p);
         Region region;
         World selectionWorld = localSession.getSelectionWorld();
+        SchemBrush schemBrush = new SchemBrush(schemArgs);
+
         try {
             if (selectionWorld == null) throw new IncompleteRegionException();
             region = localSession.getSelection(selectionWorld);
@@ -131,54 +134,29 @@ public class Wood {
             return;
         }
 
-        if (schematicLoc.charAt(schematicLoc.length() - 1) == '*') {
-            File directory;
-            if (schematicLoc.length() == 1) {
-                if (!p.hasPermission("bteenhanced.admin.allschematics")) {
-                    commandSender.sendMessage(ChatColor.RED + "You do not have permission for using the entire schematics folder.");
-                    plugin.getLogger().warning(p.getName() + "(" + p.getUniqueId() + ") tried using the entire schematics folder.");
-                    return;
-                } else {
-                    directory = schematicsFolder;
-                }
-            } else {
-                String fileSeparator = schematicLoc.substring(schematicLoc.length() - 1 - File.separator.length(), schematicLoc.length() - 1);
-                if (fileSeparator.equals(File.separator) || (fileSeparator.equals("/") && "\\".equals(File.separator))) {
-                    directory = new File(schematicsFolder + File.separator + schematicLoc.substring(0, schematicLoc.length() - 2));
-                } else {
-                    commandSender.sendMessage(ChatColor.RED + "Could not understand the path.");
-                    return;
-                }
-            }
-            if (directory.exists() && inBaseDirectory(schematicsFolder, directory)) {
-                loadSchematics(directory);
-            } else {
-                commandSender.sendMessage(ChatColor.RED + "Folder does not exist.");
-                return;
-            }
-        } else {
-            File file = new File(schematicsFolder + File.separator + schematicLoc + ".schematic");
+        schemDirs = schemBrush.argsProcessing(true);
+
+        for (String schemDir : schemDirs) {
+            File file = new File(folderWE + schemDir);
             Clipboard clipboard;
             ClipboardFormat format = ClipboardFormats.findByFile(file);
             ClipboardReader reader;
-            try {
-                if (inBaseDirectory(schematicsFolder, file)) {
-                    if (file.length() > plugin.getConfig().getInt("MaxSchemSize")) {
-                        commandSender.sendMessage(ChatColor.RED + "Schematic is over max size.");
-                        return;
-                    }
-                    reader = format.getReader(new FileInputStream(file));
-                    clipboard = reader.read();
-                } else {
-                    commandSender.sendMessage(ChatColor.RED + "Schematic " + file.getName() + " does not exist.");
-                    return;
-                }
-            } catch (Exception e) {
-                commandSender.sendMessage(ChatColor.RED + "Schematic " + file.getName() + " does not exist.");
+
+            if (file.length() > plugin.getConfig().getInt("MaxSchemSize")) {
+                commandSender.sendMessage(ChatColor.RED + "Schematic is over max size.");
                 return;
             }
-            radiusSum = radius(clipboard);
-            schematics.add(clipboard);
+
+            try {
+                if (format != null) {
+                    reader = format.getReader(new FileInputStream(file));
+                    clipboard = reader.read();
+                    radiusSum += radius(clipboard);
+                    schematics.add(clipboard);
+                }
+            } catch (Exception e) {
+                commandSender.sendMessage(ChatColor.RED + "Schematic is damaged or null.");
+            }
         }
 
         if (Float.isNaN(radius)) radius = radiusSum / schematics.size();
@@ -368,35 +346,7 @@ public class Wood {
     private Clipboard randomSchematic() {
         return schematics.get(random.nextInt(schematics.size()));
     }
-
-    private void loadSchematics(File directory) {
-        Clipboard clipboard;
-        ClipboardFormat format = BuiltInClipboardFormat.MCEDIT_SCHEMATIC;
-        ClipboardReader reader;
-        final int MAX_SCHEM_SIZE = plugin.getConfig().getInt("MaxSchemSize");
-        File[] fList = directory.listFiles();
-        if (fList != null) {
-            for (File file : fList) {
-                if (file.isFile() && fileIsSchematic(file)) {
-                    try {
-                        if (file.length() <= MAX_SCHEM_SIZE) {
-                            reader = format.getReader(new FileInputStream(file));
-                            clipboard = reader.read();
-                            schematics.add(clipboard);
-                            radiusSum += radius(clipboard);
-                        } else {
-                            schematicsOverMaxSize++;
-                        }
-                    } catch (IOException e) {
-                        commandSender.sendMessage(ChatColor.RED + "Schematic " + file.getName() + " not found.");
-                    }
-                } else if (file.isDirectory()) {
-                    loadSchematics(file);
-                }
-            }
-        }
-    }
-
+    
     private void setTargetBlocks(String target) {
         if (target.startsWith("!") && target.length() > 1) {
             this.targetBlocks = target.substring(1).split(",");
@@ -414,17 +364,6 @@ public class Wood {
             }
         }
         return false;
-    }
-
-    private static boolean fileIsSchematic(File file) {
-        int period = file.getName().lastIndexOf('.');
-        return file.getName().substring(period + 1).equals("schematic");
-    }
-
-    private static boolean inBaseDirectory(File base, File user) {
-        URI parentURI = base.toURI();
-        URI childURI = user.toURI();
-        return !parentURI.relativize(childURI).isAbsolute();
     }
 
     private static double distance(double x1, double y1, double x2, double y2) {

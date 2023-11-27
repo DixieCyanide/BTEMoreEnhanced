@@ -52,7 +52,11 @@ public class TreeBrush implements TabExecutor {
             sender.sendMessage(ChatColor.RED + "Specify a tree type.");
             return true;
         }
-        schemNames = schemBrush.argsProcessing();
+        schemNames = schemBrush.argsProcessing(false);
+        if (schemNames.isEmpty()) {
+            sender.sendMessage(ChatColor.RED + "0 schematics were picked.");
+            return true;
+        }
 
         // sender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
         Bukkit.dispatchCommand(sender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
@@ -63,29 +67,29 @@ public class TreeBrush implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         final List<String> completions = new ArrayList<>();
         List<String> treeTypes = new ArrayList<>();
-        Integer argsLength = args.length;
+        Integer argsLen = args.length;
 
         SchemBrush schemBrush = new SchemBrush(args);
         treeTypes = schemBrush.itemTabCompleter();
 
-        if (args[argsLength - 1].lastIndexOf(",") >= 0) {                   // multiarg tabcompletion
+        if (args[argsLen - 1].lastIndexOf(",") >= 0) {                                                    // multiarg tabcompletion
             List<String> multiTreeTypes = new ArrayList<>();
             multiTreeTypes.addAll(treeTypes);
 
             for (Integer i = 0; i < multiTreeTypes.size(); i++) {                    
                 String multiTreeType = multiTreeTypes.get(i);
-                multiTreeTypes.set(i, args[argsLength - 1].substring(0, args[argsLength - 1].lastIndexOf(",") + 1) + multiTreeType);
+                multiTreeTypes.set(i, args[argsLen - 1].substring(0, args[argsLen - 1].lastIndexOf(",") + 1) + multiTreeType);
             }
 
-            StringUtil.copyPartialMatches(args[argsLength - 1], multiTreeTypes, completions);
+            StringUtil.copyPartialMatches(args[argsLen - 1], multiTreeTypes, completions);
             return completions;
         }
 
-        StringUtil.copyPartialMatches(args[argsLength - 1], treeTypes, completions);
+        StringUtil.copyPartialMatches(args[argsLen - 1], treeTypes, completions);
         
         if (treeTypes.isEmpty()) {
             completions.add("There are no more folders.");
-        } else if (argsLength < 2) {
+        } else if (argsLen < 2) {
             completions.add(0, "-s");
         } else if (!args[0].equals("-s")){
             completions.add(0, "any");
