@@ -5,6 +5,12 @@ Bukkit plugin created for the BuildtheEarth project to make creating custom fore
 
 [![](https://bstats.org/signatures/bukkit/BTEMoreEnhanced.svg)](https://bstats.org/plugin/bukkit/BTEMoreEnhanced "BTEMoreEnhanced on bStats")
 
+**Treepack:**
+<details>
+    <summary>Download link</summary>
+    https://www.dropbox.com/s/glw3837szae16rc/newtrees.zip
+</details>
+
 **Commands:**
 <details>
     <summary>/wood {schematic(s)} [!]{block ID(s)} [flags: -includeAir,-dontRotate,-r:x]</summary>
