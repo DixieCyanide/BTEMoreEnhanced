@@ -23,6 +23,8 @@ import com.github.dixiecyanide.btemoreenhanced.bstats.Metrics;
 import com.github.dixiecyanide.btemoreenhanced.commands.*;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemCollector;
 import com.github.dixiecyanide.btemoreenhanced.update.UpdateChecker;
+import com.github.dixiecyanide.btemoreenhanced.update.UpdateNotification;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BTEMoreEnhanced extends JavaPlugin {
@@ -39,6 +41,7 @@ public class BTEMoreEnhanced extends JavaPlugin {
         getCommand("dellast").setExecutor(new DelLast());
         getCommand("delpoint").setExecutor(new DelPoint());
         getCommand("treebrush").setExecutor(new TreeBrush());
+        getServer().getPluginManager().registerEvents(new UpdateNotification(), this);
         getConfig().options().copyDefaults(true);
         saveConfig();
         new Metrics(this, 20042);
