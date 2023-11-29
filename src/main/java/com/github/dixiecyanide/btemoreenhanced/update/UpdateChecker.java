@@ -33,13 +33,11 @@ import java.util.logging.Logger;
 
 public class UpdateChecker implements Runnable {
     private final Logger logger;
-    private Boolean isLatest = false;
     private String current;
     private String latest;
 
     public UpdateChecker(BTEMoreEnhanced bteMoreEnhanced) {
         this.logger = bteMoreEnhanced.getLogger();
-        this.isLatest = false;
         this.current = cleanVersion(bteMoreEnhanced.getDescription().getVersion());
         this.latest = getLatestVersion();
     }
@@ -60,11 +58,10 @@ public class UpdateChecker implements Runnable {
     public Boolean isLatestVersion() {
         latest = getLatestVersion();
         if (!current.equals(latest)) {
-            isLatest = false;
+            return false;
         } else {
-            isLatest = true;
+            return true;
         }
-        return isLatest;
     }
 
     public String getCurrent() {
