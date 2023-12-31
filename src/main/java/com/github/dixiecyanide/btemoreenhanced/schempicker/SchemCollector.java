@@ -1,6 +1,6 @@
 /*
  * BTEMoreEnhanced, a building tool
- * Copyright 2022 (C) DixieCyanide
+ * Copyright 2023 (C) DixieCyanide
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
