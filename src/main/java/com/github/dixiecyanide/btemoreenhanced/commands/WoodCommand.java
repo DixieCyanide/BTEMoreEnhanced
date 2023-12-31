@@ -72,18 +72,16 @@ public class WoodCommand implements TabExecutor {
 
         Wood wood;
         // If flags
-        if (args[argsLen - 3].indexOf("-") == 0 && !args[argsLen - 3].equals("-s")) {            // if 3 flags (check for -s caused by collisions)
-            String[] schemArgs = Arrays.copyOfRange(args, 0, argsLen - 4);
-            String[] flags = Arrays.copyOfRange(args, argsLen - 4, argsLen);
-            wood = new Wood(p, commandSender, schemArgs, args[argsLen - 4], flags);
-        }else if (args[argsLen - 2].indexOf("-") == 0) {                                                  // if 2 flags
-            String[] schemArgs = Arrays.copyOfRange(args, 0, argsLen - 3);
-            String[] flags = Arrays.copyOfRange(args, argsLen - 4, argsLen);
-            wood = new Wood(p, commandSender, schemArgs, args[argsLen - 3], flags);
-        } else if (args[argsLen - 1].indexOf("-") == 0) {                                                 // if 1 flag
-            String[] schemArgs = Arrays.copyOfRange(args, 0, argsLen - 2);
-            String[] flags = Arrays.copyOfRange(args, argsLen - 4, argsLen);
-            wood = new Wood(p, commandSender, schemArgs, args[argsLen - 2], flags);
+        if (args[argsLen - 1].indexOf("-") == 0) {
+            Integer i = 0;
+            for (String arg : args) {
+                if (arg.indexOf("-") == 0 && !arg.equals(("-s"))){                                         // not to account for "-s" flag
+                    i++;
+                }                                        
+            }
+            String[] flags = Arrays.copyOfRange(args, argsLen - i, argsLen);
+            String[] schemArgs = Arrays.copyOfRange(args, 0, argsLen - flags.length - 1);
+            wood = new Wood(p,commandSender, schemArgs, args[schemArgs.length], flags);
         } else {                                                                                              // if no flags
             String[] schemArgs = Arrays.copyOfRange(args, 0, argsLen - 1);
             wood = new Wood(p, commandSender, schemArgs, args[argsLen - 1]);

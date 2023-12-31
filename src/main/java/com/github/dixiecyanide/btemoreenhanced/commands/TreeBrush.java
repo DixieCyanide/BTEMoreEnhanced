@@ -54,7 +54,7 @@ public class TreeBrush implements TabExecutor {
         }
         schemNames = schemBrush.argsProcessing(false);
         if (schemNames.isEmpty()) {
-            sender.sendMessage(ChatColor.RED + "0 schematics were picked.");
+            sender.sendMessage(ChatColor.RED + "0 schematics picked!");
             return true;
         }
 

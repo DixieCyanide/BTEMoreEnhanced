@@ -54,7 +54,7 @@ public class SchemBrush {
             }
 
             if (arg.indexOf(",") >= 0) {
-                regex = processMultiarg(arg, regex, true);
+                regex = processMultiarg(arg, regex);
             } else if (arg.equals("any")) {
                 regex += String.format("\\%s.*", File.separator);
             } else {
@@ -91,7 +91,7 @@ public class SchemBrush {
             } else {
                 Pattern pattern;
                 if (args[1].indexOf(",") >= 0) {
-                    pattern = Pattern.compile(String.format("^.*%s.*", processMultiarg(args[1], "", needFullDirs)));
+                    pattern = Pattern.compile(String.format("^.*%s.*", processMultiarg(args[1], "")));
                 } else {
                     pattern = Pattern.compile(String.format("(^.*%s.*)", args[1]));
                 }
@@ -106,7 +106,7 @@ public class SchemBrush {
                 continue;
             }
             if (arg.indexOf(",") >= 0) {
-                regex = processMultiarg(arg, regex, needFullDirs);
+                regex = processMultiarg(arg, regex);
             } else if (arg.equals("any")) {
                 regex += String.format("\\%s.*", File.separator);
             } else {
@@ -144,7 +144,7 @@ public class SchemBrush {
         return fittingSchemDirs;
     }
 
-    public String processMultiarg (String arg, String regex, Boolean needDirPart) {
+    public String processMultiarg (String arg, String regex) {
         String[] argParts = arg.split(",");
         String regexPart = "(?:";
 
@@ -153,12 +153,7 @@ public class SchemBrush {
         }
 
         regexPart = regexPart.substring(0, regexPart.length() - 1);
-
-        if (!needDirPart) {
-            return regexPart + ")";
-        } else {
-            regex += String.format("\\%s%s)",File.separator, regexPart);
-            return regex;
-        }
+        regex += String.format("\\%s%s)",File.separator, regexPart);
+        return regex;
     }
 }
