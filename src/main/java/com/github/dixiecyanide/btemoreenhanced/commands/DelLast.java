@@ -19,13 +19,17 @@
 package com.github.dixiecyanide.btemoreenhanced.commands;
 
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
+import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.selector.ConvexPolyhedralRegionSelector;
 import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.world.World;
@@ -38,6 +42,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Collection;
 import java.util.List;
 
 public class DelLast implements CommandExecutor {
@@ -84,23 +89,49 @@ public class DelLast implements CommandExecutor {
             return true;
         }
 
-        if(!(region instanceof Polygonal2DRegion)) {
-            commandSender.sendMessage(ChatColor.RED + "Currently only poly regions are supported.");
+        if(!(region instanceof Polygonal2DRegion) && !(region instanceof ConvexPolyhedralRegion)) {
+            commandSender.sendMessage(ChatColor.RED + "Only poly or convex regions are supported.");
             return true;
         }
 
-        Polygonal2DRegion reg = (Polygonal2DRegion) region;
-        List<BlockVector2> points = reg.getPoints();
+        if (region instanceof Polygonal2DRegion) {
+            Polygonal2DRegion reg = (Polygonal2DRegion) region;
+            List<BlockVector2> points = reg.getPoints();
 
-        if (numToDelete > points.size() - 1) {
-            commandSender.sendMessage(ChatColor.RED + "You can't delete that many points, there must be at least one point left over. You can delete up to " + (points.size() - 1));
-            return true;
+            if (numToDelete > points.size() - 1) {
+                commandSender.sendMessage(ChatColor.RED + "You can't delete that many points, there must be at least one point left over. You can delete up to " + (points.size() - 1));
+                return true;
+            }
+
+            List<BlockVector2> newPoints = points.subList(0, points.size() - numToDelete);
+            Polygonal2DRegionSelector regionSelector = new Polygonal2DRegionSelector(selectionWorld, newPoints, reg.getMinimumY(), reg.getMaximumY());
+            localSession.setRegionSelector(selectionWorld, regionSelector);
+            regionSelector.explainRegionAdjust(p, localSession);
         }
+        
+        if (region instanceof ConvexPolyhedralRegion) {
+            ConvexPolyhedralRegion reg = (ConvexPolyhedralRegion) region;
+            Collection<BlockVector3> verts = reg.getVertices();
+            
+            if (numToDelete > verts.size() - 1) {
+                commandSender.sendMessage(ChatColor.RED + "You can't delete that many points, there must be at least one point left over. You can delete up to " + (verts.size() - 1));
+                return true;
+            }
 
-        List<BlockVector2> newPoints = points.subList(0, points.size() - numToDelete);
-        Polygonal2DRegionSelector regionSelector = new Polygonal2DRegionSelector(selectionWorld, newPoints, reg.getMinimumY(), reg.getMaximumY());
-        localSession.setRegionSelector(selectionWorld, regionSelector);
-        regionSelector.explainRegionAdjust(p, localSession);
+            ConvexPolyhedralRegionSelector newRegion = new ConvexPolyhedralRegionSelector(selectionWorld);
+            
+            Integer i = 0;
+            for (BlockVector3 vert : verts) {
+                if (i == 0) {
+                    newRegion.selectPrimary(vert, ActorSelectorLimits.forActor(p));
+                } else if (i < (verts.size() - numToDelete)) {
+                    newRegion.selectSecondary(vert, ActorSelectorLimits.forActor(p));
+                }
+                i++;
+            }
+            localSession.setRegionSelector(selectionWorld, newRegion);
+            newRegion.explainRegionAdjust(p, localSession);
+        } 
         commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "Selection edited!");
         return true;
     }
