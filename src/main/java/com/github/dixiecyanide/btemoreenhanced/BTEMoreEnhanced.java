@@ -1,6 +1,6 @@
 /*
  * BTEMoreEnhanced, a building tool
- * Copyright 2023 (C) DixieCyanide
+ * Copyright 2024 (C) DixieCyanide
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemCollector;
 import com.github.dixiecyanide.btemoreenhanced.update.UpdateChecker;
 import com.github.dixiecyanide.btemoreenhanced.update.UpdateNotification;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BTEMoreEnhanced extends JavaPlugin {
@@ -35,12 +36,20 @@ public class BTEMoreEnhanced extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        try {
+            Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
+        } catch (Exception e) {
+            getLogger().info("\033[0;31m" + "Couldn't find FastAsyncWorldEdit plugin. Please check plugins." + "\033[0m");
+            Bukkit.getPluginManager().disablePlugin(BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class));
+        }
+        
         saveDefaultConfig();
-        getCommand("wood").setExecutor(new WoodCommand());
+        getCommand("/wood").setExecutor(new WoodCommand());
         getCommand("btemoreenhanced-reload").setExecutor(new ReloadConfig());
-        getCommand("dellast").setExecutor(new DelLast());
-        getCommand("delpoint").setExecutor(new DelPoint());
-        getCommand("treebrush").setExecutor(new TreeBrush());
+        getCommand("/dellast").setExecutor(new DelLast());
+        getCommand("/delpoint").setExecutor(new DelPoint());
+        getCommand("/treebrush").setExecutor(new TreeBrush());
+        getCommand("/terraform").setExecutor(new Terraform());
         getServer().getPluginManager().registerEvents(new UpdateNotification(), this);
         getConfig().options().copyDefaults(true);
         saveConfig();

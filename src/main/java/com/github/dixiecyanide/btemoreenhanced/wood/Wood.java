@@ -1,6 +1,6 @@
 /*
  * BTEMoreEnhanced, a building tool
- * Copyright 2023 (C) DixieCyanide
+ * Copyright 2024 (C) DixieCyanide
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,7 +145,6 @@ public class Wood {
 
         for (String schemDir : schemDirs) {
             String schemName = schemDir.substring(schemDir.lastIndexOf(File.separator) + 1);
-            //commandSender.sendMessage(schemName);
 
             if (presentSchems.contains(schemName)) {
                 continue;
@@ -189,6 +188,8 @@ public class Wood {
 
         minPointCoords = BlockVector3.at(minimumPoint.getX(), minimumPoint.getY(), minimumPoint.getZ());
         editSession = WorldEdit.getInstance().newEditSession(p.getWorld());
+        editSession.setMask(localSession.getMask());
+        
         startBlockVectors = new ArrayList<>();
         prevX = 0;
         prevZ = 0;
@@ -242,7 +243,7 @@ public class Wood {
             }
 
             PasteBuilder pb = clipboardHolder.createPaste(editSession).to(pos).ignoreAirBlocks(ignoreAirBlocks);
-            
+
             try {
                 Operations.completeLegacy(pb.build());
             } catch (MaxChangedBlocksException e) {

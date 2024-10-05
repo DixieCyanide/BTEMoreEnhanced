@@ -9,9 +9,9 @@ depend:
 softdepend:
   - SchematicBrush
 commands:
-  wood:
+  /wood:
     description: Creates a forest/wood in your selection from schematics
-    usage: /wood {schematic(s)} [!]{block ID(s)} [flags -includeAir,-dontRotate,-r:x]
+    usage: //wood {schematic(s)} [!]{block ID(s)} [flags -includeAir,-dontRotate,-r:x]
     aliases:
       - /wood
       - /w
@@ -20,35 +20,42 @@ commands:
     description: Reload config
     usage: /btemoreenhanced-reload
     permission: btemoreenhanced.reload
-  treebrush:
+  /treebrush:
     description: Easy to use brush specifically for trees on top of //schbr (Schematic Brush Plugin)
-    usage: /treebrush {type} [size] [thickness]
+    usage: //treebrush {type} [size] [thickness]
     aliases:
-      - tbr
-      - treebr
       - /tbr
+      - /treebr
+      - /treebrush
   /dell:
     description: Deletes last [num] point(s) in (currently poly2d only) selection
     usage: //dell [num]
     aliases:
-      - dell
-      - dellast
+      - /dell
       - /dellast
     permission: btemoreenhanced.selection.dellast
   /delp:
     description: Deletes the [num] point in (currently poly2d only) selection
     usage: //delp [num]
     aliases:
-      - delp
-      - delpoint
+      - /delp
       - /delpoint
     permission: btemoreenhanced.selection.delpoint
+  /terraform:
+    description: 
+    usage: //terraform {height} [delbot] [deltop]
+    aliases:
+      - /terraform
+      - /terr
+      - /tf
+    permission: btemoreenhanced.region.terraform
 permissions:
   btemoreenhanced.*:
     description: Wildcard permission
     children:
       btemoreenhanced.region: true
       btemoreenhanced.region.wood: true
+      btemoreenhanced.region.terraform: true
       btemoreenhanced.reload: true
       btemoreenhanced.selection: true
       btemoreenhanced.selection.dellast: true
@@ -66,8 +73,11 @@ permissions:
     description: All region commands
     children:
       btemoreenhanced.region.wood: true
+      btemoreenhanced.region.terraform: true
   btemoreenhanced.region.wood:
-    description: Allows usage of /wood
+    description: Allows usage of //wood
+  btemoreenhanced.region.terraform:
+    description: Allows usage of // terraform
   btemoreenhanced.selection.*:
     description: Allows usage of all selection related commands
     children:

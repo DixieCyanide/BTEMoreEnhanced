@@ -1,6 +1,6 @@
 /*
  * BTEMoreEnhanced, a building tool
- * Copyright 2023 (C) DixieCyanide
+ * Copyright 2024 (C) DixieCyanide
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ public class SchemCollector {
         return schems;
     }
 
-    public static void reloadPlugin() {
+    public static void reloadConfig() {
         treepackFolder = plugin.getConfig().getString("TreepackFolder");
         folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + treepackFolder);
         directories.clear();

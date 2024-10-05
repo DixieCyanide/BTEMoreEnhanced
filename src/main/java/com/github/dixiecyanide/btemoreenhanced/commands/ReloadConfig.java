@@ -1,6 +1,6 @@
 /*
  * BTEMoreEnhanced, a building tool
- * Copyright 2023 (C) DixieCyanide
+ * Copyright 2024 (C) DixieCyanide
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ public class ReloadConfig implements CommandExecutor {
         }
 
         plugin.reloadConfig();
-        SchemCollector.reloadPlugin();
+        SchemCollector.reloadConfig();
+        Terraform.reloadConfig();
 
         if (commandSender instanceof Player) {                                  // just because i want fancy colors here and there 
             commandSender.sendMessage(ChatColor.DARK_PURPLE + "Plugin reloaded.");
