@@ -13,14 +13,14 @@ Bukkit plugin created for the BuildtheEarth project to make creating custom fore
 
 **Commands:**
 <details>
-    <summary>/wood {schematic(s)} [!]{block ID(s)} [flags: -includeAir,-dontRotate,-r:x]</summary>
-    *(Aliases: //wood, //w)* More info in "How to use /wood"
+    <summary>//wood {schematic(s)} [!]{block ID(s)} [flags: -includeAir,-dontRotate,-r:x]</summary>
+    *(Aliases: //wood, //w)* More info in "How to use //wood"
 </details>
 <details>
-    <summary>/treebrush {type} {height/size} {size/thickness} [thickness]
+    <summary>//treebrush {type} [height/size] [size/thickness] [thickness]
     /treebrush -s {schematicName} </summary>
-    *(Aliases: /tbr, //tbr, /treebr)* Easy to use brush specifically for trees on top of //schbr ([Schematic Brush Plugin](https://github.com/mikeprimm/SchematicBrush)). Ex: /treebr oak M any thin | 
-    Use -s flag if you want to use specific tree. Ex: /treebr -s general01
+    *(Aliases: //tbr, //treebr, //treebrush)* Easy to use brush specifically for trees on top of //schbr ([Schematic Brush Plugin](https://github.com/mikeprimm/SchematicBrush)). Ex: /treebr oak M any thin | 
+    Use -s flag if you want to use specific tree. Ex: //treebr -s general01
 </details>
 <details>
     <summary>/bteenhanced-reload</summary>
@@ -28,11 +28,15 @@ Bukkit plugin created for the BuildtheEarth project to make creating custom fore
 </details>
 <details>
     <summary>//dell [num]</summary>
-    *(Aliases: /dellast, /dell, //dellast)* Deletes the last `[num]` amount of points in the selection. (Currently only supports poly2d selections) If `[num]` is not specified it will delete the last point.
+    *(Aliases: //dellast, //dell)* Deletes the last `[num]` amount of points in the selection. (Currently only supports poly2d and convex selections) If `[num]` is not specified it will delete the last point.
 </details>
 <details>
     <summary>//delp {num}</summary>
-    *(Aliases: /delpoint, /delp, //delpoint)* Deletes the `{num}`'th point in the selection. (Currently only supports poly2d selections)
+    *(Aliases: //delpoint, //delp)* Deletes the `{num}`'th point in the selection. (Currently only supports poly2d and convex selections)
+</details>
+<details>
+    <summary>//terraform {height} [delbot] [deltop]</summary>
+    *(Aliases: //terraform, //terr, //tf)* Allows for easy terraforming to desired {height} and vertical cleanup under([delbot]) and over([deltop]) selected height. (Available for cuboid and poly2d selections)
 </details>
 
 **Permissions:** Look [here](src/main/resources/plugin.yml)
@@ -43,7 +47,7 @@ Bukkit plugin created for the BuildtheEarth project to make creating custom fore
 - `FastAsyncWorldEdit`
 - `SchematicBrushReborn`
 
-## How to use /wood
+## How to use //wood
 First make a region selection, all selections such as cuboid, poly, and convex work.
 *This plugin saves edit sessions from /wood to the player's local session, so players can use WorldEdit's //undo and //redo. This means players will need to have the WorldEdit permissions for //undo and //redo*
 
