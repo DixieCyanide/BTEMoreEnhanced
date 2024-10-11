@@ -4,10 +4,10 @@
 # UpdateCheckEnabled: true (If plugin will check for new GitHub releases)
 # TreepackFolder: newtrees (Treepack folder name)
 # DefaultTopRemove: 15 (what value will //terraform command suggest in tab completion, -1 to disable)
-# DefaultBottomRemove: 10 (what value will //terraform command suggest in tab completion, -1 to disable)
+# DefaultBotRemove: 10 (what value will //terraform command suggest in tab completion, -1 to disable)
 MaxSchemSize: 5120
 MaxTries: 60
 UpdateCheckEnabled: true
 TreepackFolder: ""
 DefaultTopRemove: 15
-DefaultBottomRemove: 10
+DefaultBotRemove: 10

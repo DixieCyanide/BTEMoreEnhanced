@@ -67,6 +67,10 @@ public class Terraform implements TabExecutor {
             commandSender.sendMessage(ChatColor.RED + "Specify terrain height.");
             return true;
         }
+        if (args.length > 3) {
+            commandSender.sendMessage(ChatColor.RED + "Too many arguments.");
+            return true;
+        }
         for (String arg : args) {
             try {
                 Integer.valueOf(arg);
@@ -122,12 +126,12 @@ public class Terraform implements TabExecutor {
             return true;
         }
 
+        editSession = localSession.createEditSession(p);
+        editSession.setMask(localSession.getMask());
+
         if (region instanceof Polygonal2DRegion) {
             Polygonal2DRegion reg = (Polygonal2DRegion) region;
             Integer[] ogVertBorders = {reg.getMaximumY(), reg.getMinimumY()};
-
-            editSession = WorldEdit.getInstance().newEditSession(p.getWorld());
-            editSession.setMask(localSession.getMask());
             
             // This thing is kinda order-dependent if selection is 1 block high.
             // So you need to "stretch" selection from top if desired height is higher
@@ -164,9 +168,6 @@ public class Terraform implements TabExecutor {
             CuboidRegion reg = (CuboidRegion) region;
             CuboidRegion ogReg = reg.clone();
 
-            editSession = WorldEdit.getInstance().newEditSession(p.getWorld());
-            editSession.setMask(localSession.getMask());
-
             //max
             reg.setPos1(BlockVector3.at(ogReg.getPos1().getX(), argsList.get(0) + argsList.get(2), ogReg.getPos1().getZ()));
             //min
@@ -186,12 +187,12 @@ public class Terraform implements TabExecutor {
             reg.setPos1(ogReg.getPos1());
             reg.setPos2(ogReg.getPos2());
         } else {
-            commandSender.sendMessage(ChatColor.RED + "Only cuboid and poly regions are supported.");
+            commandSender.sendMessage(ChatColor.RED + "Only cuboid and poly selections are supported.");
             return true;
         }
 
         localSession.remember(editSession);
-        commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "Terraforming complete.");
+        commandSender.sendMessage(ChatColor.DARK_PURPLE + "Terraforming complete.");
 
         return true;
     }

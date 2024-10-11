@@ -28,27 +28,40 @@ commands:
       - /treebr
       - /treebrush
   /dell:
-    description: Deletes last [num] point(s) in (currently poly2d only) selection
+    description: Deletes last [num] point(s) in poly2d or convex selection
     usage: //dell [num]
     aliases:
       - /dell
       - /dellast
     permission: btemoreenhanced.selection.dellast
+  /delf:
+    description: Deletes first [num] point(s) in poly2d or convex selection
+    usage: //delf [num]
+    aliases:
+      - /delf
+      - /delfirst
+    permission: btemoreenhanced.selection.delfirst
   /delp:
-    description: Deletes the [num] point in (currently poly2d only) selection
+    description: Deletes the [num] point in poly2d or convex selection
     usage: //delp [num]
     aliases:
       - /delp
       - /delpoint
     permission: btemoreenhanced.selection.delpoint
   /terraform:
-    description: 
+    description: Makes platform of emeralds on specified {height} and clears below([delbot]) and above([deltop])
     usage: //terraform {height} [delbot] [deltop]
     aliases:
       - /terraform
       - /terr
       - /tf
     permission: btemoreenhanced.region.terraform
+  /reach:
+    description:
+    usage: //reach {length}
+    aliases:
+      - /reach
+    permission: bteemoreenhanced.player.reach
 permissions:
   btemoreenhanced.*:
     description: Wildcard permission
@@ -59,7 +72,9 @@ permissions:
       btemoreenhanced.reload: true
       btemoreenhanced.selection: true
       btemoreenhanced.selection.dellast: true
+      btemoreenhanced.selection.delfirst: true
       btemoreenhanced.selection.delpoint: true
+      btemoreemhanced.player.reach: true
   btemoreenhanced.admin.*:
     description: All "admin" perms
     children:
@@ -82,8 +97,17 @@ permissions:
     description: Allows usage of all selection related commands
     children:
       btemoreenhanced.selection.dellast: true
+      btemoreenhanced.selection.delfirst: true
       btemoreenhanced.selection.delpoint: true
   btemoreenhanced.selection.dellast:
     description: Allows usage of //dell
+  btemoreenhanced.selection.delfirst:
+    description: Allows usage of //delf
   btemoreenhanced.selection.delpoint:
     description: Allows usage of //delp
+  btemoreenhanced.player.*:
+    description: All commands affecting players
+    children:
+      btemoreenhanced.player.reach: true
+  btemoreenhanced.player.reach:
+    description: Allows usage of //reach

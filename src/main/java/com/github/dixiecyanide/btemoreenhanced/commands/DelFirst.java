@@ -1,20 +1,20 @@
 /*
- * BTEMoreEnhanced, a building tool
- * Copyright 2024 (C) DixieCyanide
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+* BTEMoreEnhanced, a building tool
+* Copyright 2024 (C) DixieCyanide
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 
 package com.github.dixiecyanide.btemoreenhanced.commands;
 
@@ -45,11 +45,11 @@ import org.bukkit.plugin.Plugin;
 import java.util.Collection;
 import java.util.List;
 
-public class DelLast implements CommandExecutor {
+public class DelFirst implements CommandExecutor {
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        if (!commandSender.hasPermission("btemoreenhanced.selection.dellast") && !commandSender.isOp()) {
+        if (!commandSender.hasPermission("btemoreenhanced.selection.delfirst") && !commandSender.isOp()) {
             return false;
         }
         if (!(commandSender instanceof Player)) {
@@ -103,7 +103,7 @@ public class DelLast implements CommandExecutor {
                 return true;
             }
 
-            List<BlockVector2> newPoints = points.subList(0, points.size() - numToDelete);
+            List<BlockVector2> newPoints = points.subList(numToDelete, points.size());
             Polygonal2DRegionSelector regionSelector = new Polygonal2DRegionSelector(selectionWorld, newPoints, reg.getMinimumY(), reg.getMaximumY());
             localSession.setRegionSelector(selectionWorld, regionSelector);
             regionSelector.explainRegionAdjust(p, localSession);
@@ -122,9 +122,12 @@ public class DelLast implements CommandExecutor {
             
             Integer i = 0;
             for (BlockVector3 vert : verts) {
-                if (i == 0) {
+                if (i < numToDelete) {
+                    i++;
+                    continue;
+                } else if (i == numToDelete) {
                     newRegion.selectPrimary(vert, ActorSelectorLimits.forActor(p));
-                } else if (i < (verts.size() - numToDelete)) {
+                } else if (i < (verts.size())) {
                     newRegion.selectSecondary(vert, ActorSelectorLimits.forActor(p));
                 }
                 i++;

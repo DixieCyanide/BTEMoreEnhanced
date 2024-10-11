@@ -141,7 +141,7 @@ public class DelPoint implements CommandExecutor {
             localSession.setRegionSelector(selectionWorld, newRegion);
             newRegion.explainRegionAdjust(p, localSession);
         }
-        commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "Point " + numToDelete + " deleted!");
+        commandSender.sendMessage(ChatColor.DARK_PURPLE + "Point " + numToDelete + " deleted!");
         return true;        
     }
 }

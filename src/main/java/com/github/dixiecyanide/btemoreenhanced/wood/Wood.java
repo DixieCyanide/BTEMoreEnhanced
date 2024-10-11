@@ -31,7 +31,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.AffineTransform;
-import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.PasteBuilder;
@@ -91,7 +91,6 @@ public class Wood {
         this.commandSender = commandSender;
         this.schemArgs = schemArgs;
         this.radius = Float.NaN;
-        this.editSession = WorldEdit.getInstance().newEditSession(p.getWorld());
         setTargetBlocks(target);
 
         for (String flag : flags) {
@@ -115,7 +114,6 @@ public class Wood {
         this.commandSender = commandSender;
         this.schemArgs = schemArgs;
         this.radius = Float.NaN;
-        this.editSession = WorldEdit.getInstance().newEditSession(p.getWorld());
         setTargetBlocks(target);
     }
 
@@ -135,8 +133,8 @@ public class Wood {
             commandSender.sendMessage(ChatColor.RED + "Please make a region selection first.");
             return;
         }
-        if((region instanceof CuboidRegion)) {
-            commandSender.sendMessage(ChatColor.RED + "Cuboids are currently unsuppoted.");
+        if((region instanceof Polygonal2DRegion)) {
+            commandSender.sendMessage(ChatColor.RED + "Only polygonal selections are supported.");
             return;
         }
 
@@ -187,7 +185,7 @@ public class Wood {
         }
 
         minPointCoords = BlockVector3.at(minimumPoint.getX(), minimumPoint.getY(), minimumPoint.getZ());
-        editSession = WorldEdit.getInstance().newEditSession(p.getWorld());
+        editSession = localSession.createEditSession(p);
         editSession.setMask(localSession.getMask());
         
         startBlockVectors = new ArrayList<>();
@@ -252,8 +250,8 @@ public class Wood {
             }
         }
         localSession.remember(editSession);
-        commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "Done! " + points.size() + " trees pasted. " + schematics.size() + " schematics in pool. " + selectedBlocks + " blocks matched mask. " + (schematicsOverMaxSize == 0 ? "" : schematicsOverMaxSize + " schematics too large."));
-        commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "Took " + (System.nanoTime() - startTime) / 1e6 + " milliseconds.");
+        commandSender.sendMessage(ChatColor.DARK_PURPLE + "Done! " + points.size() + " trees pasted. " + schematics.size() + " schematics in pool. " + selectedBlocks + " blocks matched mask. " + (schematicsOverMaxSize == 0 ? "" : schematicsOverMaxSize + " schematics too large."));
+        commandSender.sendMessage(ChatColor.DARK_PURPLE + "Took " + (System.nanoTime() - startTime) / 1e6 + " milliseconds.");
     }
 
     private void makePossibleVectorsGrid(List<BlockVector3> regionList, Integer i) {

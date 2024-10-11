@@ -39,17 +39,25 @@ public class BTEMoreEnhanced extends JavaPlugin {
         try {
             Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
         } catch (Exception e) {
-            getLogger().info("\033[0;31m" + "Couldn't find FastAsyncWorldEdit plugin. Please check plugins." + "\033[0m");
+            getLogger().severe("Couldn't find FastAsyncWorldEdit plugin. Please check plugins.");
             Bukkit.getPluginManager().disablePlugin(BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class));
         }
+
+        Integer serverVersion = Integer.valueOf(Bukkit.getBukkitVersion().substring(2, 4));
         
         saveDefaultConfig();
         getCommand("/wood").setExecutor(new WoodCommand());
         getCommand("btemoreenhanced-reload").setExecutor(new ReloadConfig());
         getCommand("/dellast").setExecutor(new DelLast());
+        getCommand("/delfirst").setExecutor(new DelFirst());
         getCommand("/delpoint").setExecutor(new DelPoint());
         getCommand("/treebrush").setExecutor(new TreeBrush());
         getCommand("/terraform").setExecutor(new Terraform());
+        if (serverVersion >= 21) {
+            getCommand("/reach").setExecutor(new Reach());
+        } else {
+            getLogger().warning("Unsupported server version for //reach command.");
+        }
         getServer().getPluginManager().registerEvents(new UpdateNotification(), this);
         getConfig().options().copyDefaults(true);
         saveConfig();
