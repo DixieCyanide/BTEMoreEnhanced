@@ -133,7 +133,7 @@ public class Wood {
             commandSender.sendMessage(ChatColor.RED + "Please make a region selection first.");
             return;
         }
-        if((region instanceof Polygonal2DRegion)) {
+        if(!(region instanceof Polygonal2DRegion)) {
             commandSender.sendMessage(ChatColor.RED + "Only polygonal selections are supported.");
             return;
         }

@@ -57,7 +57,7 @@ commands:
       - /tf
     permission: btemoreenhanced.region.terraform
   /reach:
-    description:
+    description: Changes interaction distance {length} with blocks and entities.
     usage: //reach {length}
     aliases:
       - /reach
