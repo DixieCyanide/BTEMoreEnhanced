@@ -20,51 +20,55 @@
 package com.github.dixiecyanide.btemoreenhanced.commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TreeBrush implements TabExecutor {
+    private static final BTEMoreEnhanced plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private Logger chatLogger;
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+        chatLogger = plugin.getBMEChatLogger();
         SchemBrush schemBrush = new SchemBrush(args);
         List<String> schemNames = new ArrayList<>();
-        if (!sender.hasPermission("schematicbrush.brush.use") && !sender.isOp()) {
+        if (!commandSender.hasPermission("schematicbrush.brush.use") && !commandSender.isOp()) {
             return false;
         }
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
+        if (!(commandSender instanceof Player)) {
+            chatLogger.error(commandSender, "bme.not-a-player", null);
             return true;
         }
         if (Bukkit.getPluginManager().getPlugin("SchematicBrushReborn") == null) {
-            sender.sendMessage(ChatColor.RED + "Plugin SchematicBrush is not installed.");
+            chatLogger.error(commandSender, "bme.treebr.no-plugin", null);
             return true;
         }
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Specify a tree type.");
+            chatLogger.error(commandSender, "bme.treebr.no-type", null);
             return true;
         }
         schemNames = schemBrush.argsProcessing(false);
         if (schemNames.isEmpty()) {
-            sender.sendMessage(ChatColor.RED + "0 schematics picked!");
+            chatLogger.warning(commandSender, "bme.treebr.zero-schems", null);
             return true;
         }
 
-        // sender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
-        Bukkit.dispatchCommand(sender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
+        // commandSender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
+        Bukkit.dispatchCommand(commandSender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
         return true;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+    public List<String> onTabComplete(CommandSender commandSender, Command cmd, String label, String[] args) {
         final List<String> completions = new ArrayList<>();
         List<String> treeTypes = new ArrayList<>();
         Integer argsLen = args.length;

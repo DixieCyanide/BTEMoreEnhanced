@@ -21,7 +21,6 @@ package com.github.dixiecyanide.btemoreenhanced.commands;
 
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -30,18 +29,24 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-public class Reach implements TabExecutor{
+import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
+
+public class Reach implements TabExecutor {
+    private static final BTEMoreEnhanced plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private Logger chatLogger;
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+        chatLogger = plugin.getBMEChatLogger();
         if (!commandSender.hasPermission("btemoreenhanced.player.reach") && !commandSender.isOp()) {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
+            chatLogger.error(commandSender, "bme.not-a-player", null);
             return true;
         }
         if (args.length > 1) {
-            commandSender.sendMessage(ChatColor.RED + "Too many arguments.");
+            chatLogger.error(commandSender, "bme.too-many-args", null);
             return true;
         }
 
@@ -57,7 +62,7 @@ public class Reach implements TabExecutor{
                 blockReachAtt.setBaseValue(4.5);
             }                                            
             entityReachAtt.setBaseValue(3.5);
-            commandSender.sendMessage(ChatColor.DARK_PURPLE + "Changed reach distance to default values.");
+            chatLogger.info(commandSender, "bme.reach.default", null);
             return true;
         }
 
@@ -65,11 +70,11 @@ public class Reach implements TabExecutor{
             blockReachAtt.setBaseValue(Double.valueOf(args[0]));
             entityReachAtt.setBaseValue(Double.valueOf(args[0]));
         } catch (NumberFormatException e) {
-            commandSender.sendMessage(ChatColor.RED + "Inputs must be numbers.");
+            chatLogger.error(commandSender, "bme.NaN", null);
             return true;
         }
 
-        commandSender.sendMessage(ChatColor.DARK_PURPLE + "Changed reach distance to " + args[0] + ".");
+        chatLogger.info(commandSender, "bme.reach.changed", args[0]);
         return true;
     }
 

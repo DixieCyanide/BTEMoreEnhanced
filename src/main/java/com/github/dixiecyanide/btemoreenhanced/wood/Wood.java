@@ -20,6 +20,7 @@
 package com.github.dixiecyanide.btemoreenhanced.wood;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
 
 import com.sk89q.worldedit.*;
@@ -47,7 +48,6 @@ import org.bukkit.ChatColor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -82,6 +82,8 @@ public class Wood {
     private final Random random = new Random();
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
     private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private static final BTEMoreEnhanced bme = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private Logger chatLogger;
     private static String treepackFolder = plugin.getConfig().getString("TreepackFolder");
     private static File folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + treepackFolder);
     private final int MAX_TRIES = plugin.getConfig().getInt("MaxTries");
@@ -92,6 +94,7 @@ public class Wood {
         this.schemArgs = schemArgs;
         this.radius = Float.NaN;
         setTargetBlocks(target);
+        chatLogger = bme.getBMEChatLogger();
 
         for (String flag : flags) {
             if (flag.equals("-includeAir")) {
@@ -115,6 +118,7 @@ public class Wood {
         this.schemArgs = schemArgs;
         this.radius = Float.NaN;
         setTargetBlocks(target);
+        chatLogger = bme.getBMEChatLogger();
     }
 
     public void execute() {
@@ -130,11 +134,11 @@ public class Wood {
             if (selectionWorld == null) throw new IncompleteRegionException();
             region = localSession.getSelection(selectionWorld);
         } catch (IncompleteRegionException ex) {
-            commandSender.sendMessage(ChatColor.RED + "Please make a region selection first.");
+            chatLogger.warning(commandSender, "bme.no-selection", null);
             return;
         }
         if(!(region instanceof Polygonal2DRegion)) {
-            commandSender.sendMessage(ChatColor.RED + "Only polygonal selections are supported.");
+            chatLogger.warning(commandSender, "bme.wood.selection.wrong-selection", null);
             return;
         }
 
@@ -154,7 +158,7 @@ public class Wood {
             ClipboardReader reader;
 
             if (file.length() > plugin.getConfig().getInt("MaxSchemSize")) {
-                commandSender.sendMessage(ChatColor.RED + "Schematic is over max size.");
+                chatLogger.warning(commandSender, "bme.wood.max-size", null);
                 return;
             }
 
@@ -166,7 +170,7 @@ public class Wood {
                     schematics.add(clipboard);
                 }
             } catch (Exception e) {
-                commandSender.sendMessage(ChatColor.RED + "Schematic is damaged or null.");
+                chatLogger.warning(commandSender, "bme.wood.damaged", null);
             }
         }
 
@@ -197,7 +201,7 @@ public class Wood {
         
         Integer regionListSize = regionList.size();
         if (regionListSize < 0){
-            commandSender.sendMessage(ChatColor.RED + "Selection is too small.");
+            chatLogger.warning(commandSender, "bme.wood.selection.small", null);
             return;
         }
         Integer randomStartIndex = random.nextInt(regionList.size());
@@ -211,7 +215,7 @@ public class Wood {
         }
 
         if (selectedBlocks == 0) {
-            commandSender.sendMessage(ChatColor.RED + "No suitable surface points found. No blocks had air above and " + (inverseMask ? "weren't " : "were ") + Arrays.toString(targetBlocks));
+            chatLogger.warning(commandSender, "bme.wood.not-found", null);
             return;
         }
         
@@ -245,7 +249,7 @@ public class Wood {
             try {
                 Operations.completeLegacy(pb.build());
             } catch (MaxChangedBlocksException e) {
-                commandSender.sendMessage(ChatColor.RED + "Number of blocks changed exceeds limit set.");
+                chatLogger.error(commandSender, "bme.limit", null);
                 return;
             }
         }

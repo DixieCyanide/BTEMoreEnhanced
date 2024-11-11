@@ -19,6 +19,8 @@
 
 package com.github.dixiecyanide.btemoreenhanced.commands;
 
+import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
 import com.github.dixiecyanide.btemoreenhanced.wood.Wood;
 
@@ -30,7 +32,6 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -46,27 +47,30 @@ import java.util.List;
 
 public class WoodCommand implements TabExecutor {
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
+    private static final BTEMoreEnhanced plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private Logger chatLogger;
     private Boolean isIDpresent = false;
     private Integer IDPresenceSpot = null;
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+        chatLogger = plugin.getBMEChatLogger();
         if (!commandSender.hasPermission("btemoreenhanced.region.wood") && !commandSender.isOp()) {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
+            chatLogger.error(commandSender, "bme.not-a-player", null);
             return true;
         }
         Integer argsLen = args.length;
         Player player = (Player) commandSender;
         com.sk89q.worldedit.entity.Player p = new BukkitPlayer((WorldEditPlugin) we, player);
         if (argsLen == 0) {
-            commandSender.sendMessage(ChatColor.RED + "Specify tree type.");
+            chatLogger.error(commandSender, "bme.treebr.no-type", null);
             return false;
         }
         if (argsLen == 1 || (args[0].equals("-s") && argsLen < 3)) {
-            commandSender.sendMessage(ChatColor.RED + "Specify the block you want trees to be placed above.");
+            chatLogger.error(commandSender, "bme.wood.no-surface", null);
             return false;
         }
 

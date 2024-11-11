@@ -18,6 +18,9 @@
 
 package com.github.dixiecyanide.btemoreenhanced.commands;
 
+import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
+
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.IncompleteRegionException;
@@ -35,7 +38,6 @@ import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.world.World;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -47,13 +49,16 @@ import java.util.List;
 
 public class DelLast implements CommandExecutor {
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
+    private static final BTEMoreEnhanced plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private Logger chatLogger;
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+        chatLogger = plugin.getBMEChatLogger();
         if (!commandSender.hasPermission("btemoreenhanced.selection.dellast") && !commandSender.isOp()) {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
+            chatLogger.error(commandSender, "bme.not-a-player", null);
             return true;
         }
         Player player = (Player) commandSender;
@@ -64,15 +69,15 @@ public class DelLast implements CommandExecutor {
             try {
                 numToDelete = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
-                commandSender.sendMessage(ChatColor.RED + "Number of points to delete must be an integer.");
+                chatLogger.error(commandSender, "bme.not-an-integer", null);
                 return true;
             }
         }
         if (numToDelete == 0) {
-            commandSender.sendMessage(ChatColor.DARK_PURPLE + "Ok... why would you try to delete 0 points.");
+            chatLogger.error(commandSender, "bme.selection.delete.zero", null);
             return true;
         } else if (numToDelete < 0) {
-            commandSender.sendMessage(ChatColor.RED + "You can't delete a negative amount of points.");
+            chatLogger.error(commandSender, "bme.selection.delete.negative", null);
             return true;
         }
 
@@ -85,12 +90,12 @@ public class DelLast implements CommandExecutor {
             if (selectionWorld == null) throw new IncompleteRegionException();
             region = localSession.getSelection(selectionWorld);
         } catch (IncompleteRegionException e) {
-            commandSender.sendMessage(ChatColor.RED + "Please make a region selection first.");
+            chatLogger.warning(commandSender, "bme.no-selection", null);
             return true;
         }
 
         if(!(region instanceof Polygonal2DRegion) && !(region instanceof ConvexPolyhedralRegion)) {
-            commandSender.sendMessage(ChatColor.RED + "Only poly or convex regions are supported.");
+            chatLogger.warning(commandSender, "bme.selection.wrong-selection", null);
             return true;
         }
 
@@ -99,7 +104,7 @@ public class DelLast implements CommandExecutor {
             List<BlockVector2> points = reg.getPoints();
 
             if (numToDelete > points.size() - 1) {
-                commandSender.sendMessage(ChatColor.RED + "You can't delete that many points, there must be at least one point left over. You can delete up to " + (points.size() - 1));
+                chatLogger.error(commandSender, "bme.selection.delete.many", String.valueOf(points.size()));
                 return true;
             }
 
@@ -114,7 +119,7 @@ public class DelLast implements CommandExecutor {
             Collection<BlockVector3> verts = reg.getVertices();
             
             if (numToDelete > verts.size() - 1) {
-                commandSender.sendMessage(ChatColor.RED + "You can't delete that many points, there must be at least one point left over. You can delete up to " + (verts.size() - 1));
+                chatLogger.error(commandSender, "bme.selection.delete.many", String.valueOf(verts.size()));
                 return true;
             }
 
@@ -132,7 +137,7 @@ public class DelLast implements CommandExecutor {
             localSession.setRegionSelector(selectionWorld, newRegion);
             newRegion.explainRegionAdjust(p, localSession);
         } 
-        commandSender.sendMessage(ChatColor.DARK_PURPLE + "Selection edited!");
+        chatLogger.info(commandSender, "bme.selection.edited", null);
         return true;
     }
 }

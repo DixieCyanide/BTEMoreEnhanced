@@ -20,12 +20,12 @@
 package com.github.dixiecyanide.btemoreenhanced.commands;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -50,32 +50,34 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 public class Terraform implements TabExecutor {
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
     private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private static final BTEMoreEnhanced bme = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
     private static Integer defaultTopRemove = plugin.getConfig().getInt("DefaultTopRemove");
     private static Integer defaultBotRemove = plugin.getConfig().getInt("DefaultBotRemove");
     private EditSession editSession;
-
+    private Logger chatLogger;
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+        chatLogger = bme.getBMEChatLogger();
         if (!commandSender.hasPermission("btemoreenhanced.region.terraform") && !commandSender.isOp()) {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
+            chatLogger.error(commandSender, "bme.not-a-player", null);
             return true;
         }
         if (args.length == 0) {
-            commandSender.sendMessage(ChatColor.RED + "Specify terrain height.");
+            chatLogger.error(commandSender, "bme.terraform.no-height", null);
             return true;
         }
         if (args.length > 3) {
-            commandSender.sendMessage(ChatColor.RED + "Too many arguments.");
+            chatLogger.error(commandSender, "bme.too-many-args", null);
             return true;
         }
         for (String arg : args) {
             try {
                 Integer.valueOf(arg);
             } catch (NumberFormatException e) {
-                commandSender.sendMessage(ChatColor.RED + "Inputs must be integers.");
+                chatLogger.error(commandSender, "bme.not-an-integer", null);
                 return true;
             }
         }
@@ -108,7 +110,7 @@ public class Terraform implements TabExecutor {
                 break;
             default:
                 // I mean there can't be less than 0 arguments...    
-                commandSender.sendMessage(ChatColor.RED + "Too many arguments.");                             
+                chatLogger.error(commandSender, "bme.too-many-args", null);                        
                 break;
         }
         
@@ -122,7 +124,7 @@ public class Terraform implements TabExecutor {
             if (selectionWorld == null) throw new IncompleteRegionException();
             region = localSession.getSelection(selectionWorld);
         } catch (IncompleteRegionException e) {
-            commandSender.sendMessage(ChatColor.RED + "Please make a region selection first.");
+            chatLogger.warning(commandSender, "bme.no-selection", null);
             return true;
         }
 
@@ -153,7 +155,7 @@ public class Terraform implements TabExecutor {
                 reg.setMinimumY(argsList.get(0));
                 editSession.setBlocks(region, BlockTypes.EMERALD_BLOCK.getDefaultState());
             } catch (MaxChangedBlocksException e) {
-                commandSender.sendMessage(ChatColor.RED + "Number of blocks changed exceeds limit set.");
+                chatLogger.error(commandSender, "bme.limit", null);
                 return true;
             }
 
@@ -180,19 +182,20 @@ public class Terraform implements TabExecutor {
                 reg.setPos2(BlockVector3.at(ogReg.getPos2().getX(), argsList.get(0), ogReg.getPos2().getZ()));
                 editSession.setBlocks(region, BlockTypes.EMERALD_BLOCK.getDefaultState());
             } catch (MaxChangedBlocksException e) {
-                commandSender.sendMessage(ChatColor.RED + "Number of blocks changed exceeds limit set.");
+                chatLogger.error(commandSender, "bme.limit", null);
+
                 return true;
             }
 
             reg.setPos1(ogReg.getPos1());
             reg.setPos2(ogReg.getPos2());
         } else {
-            commandSender.sendMessage(ChatColor.RED + "Only cuboid and poly selections are supported.");
+            chatLogger.warning(commandSender, "bme.terraform.wrong-selection", null);
             return true;
         }
 
         localSession.remember(editSession);
-        commandSender.sendMessage(ChatColor.DARK_PURPLE + "Terraforming complete.");
+        chatLogger.info(commandSender, "bme.terraform.complete", null);
 
         return true;
     }

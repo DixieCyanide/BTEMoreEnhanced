@@ -24,11 +24,14 @@ import com.github.dixiecyanide.btemoreenhanced.commands.*;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemCollector;
 import com.github.dixiecyanide.btemoreenhanced.update.UpdateChecker;
 import com.github.dixiecyanide.btemoreenhanced.update.UpdateNotification;
+import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BTEMoreEnhanced extends JavaPlugin {
+    private Logger chatLogger;
+
     @Override
     public void onDisable() {
         getLogger().info("\033[0;35m" + "Goodbye!" + "\033[0m");
@@ -42,9 +45,7 @@ public class BTEMoreEnhanced extends JavaPlugin {
             getLogger().severe("Couldn't find FastAsyncWorldEdit plugin. Please check plugins.");
             Bukkit.getPluginManager().disablePlugin(BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class));
         }
-
         Integer serverVersion = Integer.valueOf(Bukkit.getBukkitVersion().substring(2, 4));
-        
         saveDefaultConfig();
         getCommand("/wood").setExecutor(new WoodCommand());
         getCommand("btemoreenhanced-reload").setExecutor(new ReloadConfig());
@@ -61,6 +62,7 @@ public class BTEMoreEnhanced extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new UpdateNotification(), this);
         getConfig().options().copyDefaults(true);
         saveConfig();
+        chatLogger = new Logger();
         new Metrics(this, 20042);
         getLogger().info("\033[0;35m" + "Searching schematics..." + "\033[0m");
         new SchemCollector();
@@ -71,5 +73,9 @@ public class BTEMoreEnhanced extends JavaPlugin {
             getLogger().info("\033[0;31m" + "Update checking is disabled. Check for releases at https://github.com/DixieCyanide/BTEMoreEnhanced/releases." + "\033[0m");
         }
         getLogger().info("\033[0;92m" + "BTEMoreEnhanced enabled!" + "\033[0m");
+    }
+
+    public Logger getBMEChatLogger(){
+        return chatLogger;
     }
 }

@@ -20,19 +20,21 @@
 package com.github.dixiecyanide.btemoreenhanced.commands;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemCollector;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class ReloadConfig implements CommandExecutor {
     private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private static final BTEMoreEnhanced bme = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private Logger chatLogger;
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+        chatLogger = bme.getBMEChatLogger();
         if (!commandSender.hasPermission("btemoreenhanced.reload") && !commandSender.isOp()) {
             return false;
         }
@@ -40,12 +42,7 @@ public class ReloadConfig implements CommandExecutor {
         plugin.reloadConfig();
         SchemCollector.reloadConfig();
         Terraform.reloadConfig();
-
-        if (commandSender instanceof Player) {                                  // just because i want fancy colors here and there 
-            commandSender.sendMessage(ChatColor.DARK_PURPLE + "Plugin reloaded.");
-        } else {
-            commandSender.sendMessage("\033[0;35m" + "Plugin reloaded." + "\033[0m");
-        }
+        chatLogger.info(commandSender, "bme.reloaded", null);
         return true;
     }
 }
