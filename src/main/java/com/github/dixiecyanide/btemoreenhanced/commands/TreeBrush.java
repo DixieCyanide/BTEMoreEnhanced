@@ -30,6 +30,8 @@ import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
 
+import net.md_5.bungee.api.ChatColor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +43,8 @@ public class TreeBrush implements TabExecutor {
         chatLogger = plugin.getBMEChatLogger();
         SchemBrush schemBrush = new SchemBrush(args);
         List<String> schemNames = new ArrayList<>();
+        Player player = (Player) commandSender;
+        
         if (!commandSender.hasPermission("schematicbrush.brush.use") && !commandSender.isOp()) {
             return false;
         }
@@ -56,14 +60,14 @@ public class TreeBrush implements TabExecutor {
             chatLogger.error(commandSender, "bme.treebr.no-type", null);
             return true;
         }
-        schemNames = schemBrush.argsProcessing(false);
+        schemNames = schemBrush.argsProcessing(player.getUniqueId(), false);
         if (schemNames.isEmpty()) {
             chatLogger.warning(commandSender, "bme.treebr.zero-schems", null);
             return true;
         }
 
-        // commandSender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
-        Bukkit.dispatchCommand(commandSender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
+        commandSender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
+        // Bukkit.dispatchCommand(commandSender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
         return true;
     }
 
@@ -72,9 +76,10 @@ public class TreeBrush implements TabExecutor {
         final List<String> completions = new ArrayList<>();
         List<String> treeTypes = new ArrayList<>();
         Integer argsLen = args.length;
+        Player player = (Player) commandSender;
 
         SchemBrush schemBrush = new SchemBrush(args);
-        treeTypes = schemBrush.itemTabCompleter();
+        treeTypes = schemBrush.itemTabCompleter(player.getUniqueId());
 
         if (args[argsLen - 1].lastIndexOf(",") >= 0) {                                                    // multiarg tabcompletion
             List<String> multiTreeTypes = new ArrayList<>();
@@ -94,7 +99,8 @@ public class TreeBrush implements TabExecutor {
         if (treeTypes.isEmpty()) {
             completions.add("There are no more folders.");
         } else if (argsLen < 2) {
-            completions.add(0, "-s");
+            completions.add("-s");
+            completions.add("any");
         } else if (!args[0].equals("-s")){
             completions.add(0, "any");
         }

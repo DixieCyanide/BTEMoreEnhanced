@@ -25,10 +25,10 @@ import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
 import com.github.dixiecyanide.btemoreenhanced.wood.Wood;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
-import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 
 import org.bukkit.Bukkit;
@@ -36,8 +36,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
 
@@ -98,13 +96,14 @@ public class WoodCommand implements TabExecutor {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+    public List<String> onTabComplete(CommandSender commandSender, Command cmd, String label, String[] args) {
         final List<String> completions = new ArrayList<>();
         List<String> treeTypes = new ArrayList<>();
         Integer argsLen = args.length;
+        Player player = (Player) commandSender;
 
         SchemBrush schemBrush = new SchemBrush(args);
-        treeTypes = schemBrush.itemTabCompleter();
+        treeTypes = schemBrush.itemTabCompleter(player.getUniqueId());
 
         if (args[argsLen - 1].lastIndexOf(",") >= 0 && !treeTypes.isEmpty()) {                            // multiarg tabcompletion
             List<String> multiTreeTypes = new ArrayList<>();
@@ -138,7 +137,7 @@ public class WoodCommand implements TabExecutor {
             } else {
                 IDPresenceSpot = argsLen - 1;
                 // block id suggestion, "//set " is used as trigger for suggester (kinda stupid, ngl)
-                CommandSuggestionEvent suggestEvent = new CommandSuggestionEvent(wrapCommandSender(sender), "//set " + args[argsLen - 1]);
+                CommandSuggestionEvent suggestEvent = new CommandSuggestionEvent(BukkitAdapter.adapt(commandSender), "//set " + args[argsLen - 1]);
                 WorldEdit.getInstance().getEventBus().post(suggestEvent);
                 completions.addAll(CommandUtil.fixSuggestions("//set " + args[argsLen - 1], suggestEvent.getSuggestions()));
             }
@@ -149,35 +148,4 @@ public class WoodCommand implements TabExecutor {
         }
         return completions;
     }
-    
-    public Actor wrapCommandSender(CommandSender sender) {
-        return wrapPlayer((Player) sender);
-    }
-
-    // Grab from FAWE
-    public BukkitPlayer wrapPlayer(Player player) {
-        //FAWE start - Use cache over returning a direct BukkitPlayer
-        BukkitPlayer wePlayer = getCachedPlayer(player);
-        if (wePlayer == null) {
-            synchronized (player) {
-                wePlayer = getCachedPlayer(player);
-                if (wePlayer == null) {
-                    wePlayer = new BukkitPlayer(    player);
-                    player.setMetadata("WE", new FixedMetadataValue(we, wePlayer));
-                    return wePlayer;
-                }
-            }
-        }
-        return wePlayer;
-        //FAWE end
-    }
-
-    BukkitPlayer getCachedPlayer(Player player) {
-        List<MetadataValue> meta = player.getMetadata("WE");
-        if (meta.isEmpty()) {
-            return null;
-        }
-        return (BukkitPlayer) meta.get(0).value();
-    }
-    // End grab from FAWE 
 }

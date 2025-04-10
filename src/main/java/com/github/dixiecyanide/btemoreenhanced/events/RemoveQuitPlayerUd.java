@@ -17,29 +17,22 @@
  */
 
 
-package com.github.dixiecyanide.btemoreenhanced.commands;
+package com.github.dixiecyanide.btemoreenhanced.events;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
-import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
+import java.util.UUID;
 
-public class ReloadConfig implements CommandExecutor {
-    private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+
+public class RemoveQuitPlayerUd  implements Listener {
     private static final BTEMoreEnhanced bme = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
-    private Logger chatLogger;
-    @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        chatLogger = bme.getBMEChatLogger();
-        if (!commandSender.hasPermission("btemoreenhanced.reload") && !commandSender.isOp()) {
-            return false;
-        }
-
-        plugin.reloadConfig();
-        chatLogger.info(commandSender, "bme.reloaded", null);
-        return true;
+    
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        UUID id = event.getPlayer().getUniqueId();
+        bme.removeOnlineUd(id);
     }
 }

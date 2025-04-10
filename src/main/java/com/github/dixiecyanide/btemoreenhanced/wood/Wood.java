@@ -142,7 +142,7 @@ public class Wood {
             return;
         }
 
-        schemDirs = schemBrush.argsProcessing(true);
+        schemDirs = schemBrush.argsProcessing(p.getUniqueId(), true);
         List<String> presentSchems = new ArrayList<String>();
 
         for (String schemDir : schemDirs) {
@@ -159,7 +159,7 @@ public class Wood {
 
             if (file.length() > plugin.getConfig().getInt("MaxSchemSize")) {
                 chatLogger.warning(commandSender, "bme.wood.max-size", null);
-                return;
+                continue;
             }
 
             try {
@@ -171,6 +171,7 @@ public class Wood {
                 }
             } catch (Exception e) {
                 chatLogger.warning(commandSender, "bme.wood.damaged", null);
+                continue;
             }
         }
 

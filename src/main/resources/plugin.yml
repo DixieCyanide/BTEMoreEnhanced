@@ -62,6 +62,12 @@ commands:
     aliases:
       - /reach
     permission: bteemoreenhanced.player.reach
+  /bmesettings:
+    description: Shows personal plugin settings
+    usage:  //bmesettings
+    aliases:
+      - /bmesetting
+      - /settings
 permissions:
   btemoreenhanced.*:
     description: Wildcard permission
@@ -74,7 +80,8 @@ permissions:
       btemoreenhanced.selection.dellast: true
       btemoreenhanced.selection.delfirst: true
       btemoreenhanced.selection.delpoint: true
-      btemoreemhanced.player.reach: true
+      btemoreenhanced.player.reach: true
+      btemoreenhanced.player.settings: true
   btemoreenhanced.admin.*:
     description: All "admin" perms
     children:
@@ -109,5 +116,8 @@ permissions:
     description: All commands affecting players
     children:
       btemoreenhanced.player.reach: true
+      btemoreenhanced.player.settings: true
   btemoreenhanced.player.reach:
     description: Allows usage of //reach
+  btemoreenhanced.player.settings:
+    description: Allows usage of //bmesettings

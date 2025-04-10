@@ -3,11 +3,17 @@
 # So too low of a value will leave holes, while too high and speed will be slower. I suggest you don't touch the number of tries.
 # UpdateCheckEnabled: true (If plugin will check for new GitHub releases)
 # TreepackFolder: newtrees (Treepack folder name)
+# TreepackAddons: addon1, addon2 (Addon(s)' folder(s) name(s))
 # DefaultTopRemove: 15 (what value will //terraform command suggest in tab completion, -1 to disable)
 # DefaultBotRemove: 10 (what value will //terraform command suggest in tab completion, -1 to disable)
+# DefaultBlock: "EMERALD_BLOCK" (surface block for //terraform, values are just ingame text ids)
+# DefaultBiome: "none" (none for not changing biome, values are just ingame text ids)
 MaxSchemSize: 5120
 MaxTries: 60
 UpdateCheckEnabled: true
 TreepackFolder: ""
+TreepackAddons: ""
 DefaultTopRemove: 15
 DefaultBotRemove: 10
+DefaultBlock: "emerald_block"
+DefaultBiome: "none"

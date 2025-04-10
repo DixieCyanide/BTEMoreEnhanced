@@ -24,13 +24,22 @@ import com.github.dixiecyanide.btemoreenhanced.commands.*;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemCollector;
 import com.github.dixiecyanide.btemoreenhanced.update.UpdateChecker;
 import com.github.dixiecyanide.btemoreenhanced.update.UpdateNotification;
+import com.github.dixiecyanide.btemoreenhanced.userdata.UdUtils;
+
 import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
+import com.github.dixiecyanide.btemoreenhanced.events.CheckJoinPlayerUd;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BTEMoreEnhanced extends JavaPlugin {
     private Logger chatLogger;
+    private UdUtils udUtils;
+    private Map<UUID, Object> udMap = new HashMap<>();
 
     @Override
     public void onDisable() {
@@ -54,6 +63,7 @@ public class BTEMoreEnhanced extends JavaPlugin {
         getCommand("/delpoint").setExecutor(new DelPoint());
         getCommand("/treebrush").setExecutor(new TreeBrush());
         getCommand("/terraform").setExecutor(new Terraform());
+        getCommand("/bmesettings").setExecutor(new BMESettings());
         if (serverVersion >= 21) {
             getCommand("/reach").setExecutor(new Reach());
         } else {
@@ -63,6 +73,9 @@ public class BTEMoreEnhanced extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         chatLogger = new Logger();
+        udUtils = new UdUtils();
+        udUtils.checkUdFolder();
+        getServer().getPluginManager().registerEvents(new CheckJoinPlayerUd(), this);
         new Metrics(this, 20042);
         getLogger().info("\033[0;35m" + "Searching schematics..." + "\033[0m");
         new SchemCollector();
@@ -75,7 +88,32 @@ public class BTEMoreEnhanced extends JavaPlugin {
         getLogger().info("\033[0;92m" + "BTEMoreEnhanced enabled!" + "\033[0m");
     }
 
-    public Logger getBMEChatLogger(){
+    public Logger getBMEChatLogger() {
         return chatLogger;
+    }
+
+    public UdUtils getUdUtils() {
+        return udUtils;
+    }
+
+    public Map<UUID, Object> getOnlineUdMap() {
+
+        return udMap;
+    }
+
+    public Map<String, Object> getOnlineUd(UUID id) {
+        return (Map<String, Object>) udMap.get(id);
+    }
+
+    public void putOnlineUd(UUID id, Map<String, Object> map) {
+        if (udMap.containsKey(id)) {
+            udMap.replace(id, map);
+            return;
+        }
+        udMap.putIfAbsent(id, map);
+    }
+
+    public void removeOnlineUd(UUID id) {
+        udMap.remove(id);
     }
 }

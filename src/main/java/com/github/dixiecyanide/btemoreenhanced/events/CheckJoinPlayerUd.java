@@ -17,29 +17,28 @@
  */
 
 
-package com.github.dixiecyanide.btemoreenhanced.commands;
+package com.github.dixiecyanide.btemoreenhanced.events;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
-import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
+import com.github.dixiecyanide.btemoreenhanced.userdata.*;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
+import java.util.UUID;
 
-public class ReloadConfig implements CommandExecutor {
-    private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+
+public class CheckJoinPlayerUd implements Listener {
     private static final BTEMoreEnhanced bme = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
-    private Logger chatLogger;
-    @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        chatLogger = bme.getBMEChatLogger();
-        if (!commandSender.hasPermission("btemoreenhanced.reload") && !commandSender.isOp()) {
-            return false;
+    private static UdUtils ud = bme.getUdUtils();
+    
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        UUID id = event.getPlayer().getUniqueId();
+        if (ud.isThereUd(id) == false) {
+            ud.createUd(id);
+            ud.writeDefaultUd(id);
         }
-
-        plugin.reloadConfig();
-        chatLogger.info(commandSender, "bme.reloaded", null);
-        return true;
+        bme.putOnlineUd(id, ud.getUd(id));
     }
 }

@@ -31,13 +31,16 @@ import org.bukkit.entity.Player;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
+import com.github.dixiecyanide.btemoreenhanced.userdata.UdUtils;
 
 public class Reach implements TabExecutor {
-    private static final BTEMoreEnhanced plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private static final BTEMoreEnhanced bme = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private static UdUtils udUtils = bme.getUdUtils();
     private Logger chatLogger;
+    
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        chatLogger = plugin.getBMEChatLogger();
+        chatLogger = bme.getBMEChatLogger();
         if (!commandSender.hasPermission("btemoreenhanced.player.reach") && !commandSender.isOp()) {
             return false;
         }
@@ -56,13 +59,26 @@ public class Reach implements TabExecutor {
         AttributeInstance entityReachAtt = player.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE);
         
         if (args.length == 0) {
+            Double value = 4.5;
+            
+            value = Double.parseDouble((String) udUtils.getOnlineUdValue(player.getUniqueId(), "Reach"));
+
+            if (value != -1) {
+                blockReachAtt.setBaseValue(value);
+                entityReachAtt.setBaseValue(value);
+                chatLogger.info(commandSender, "bme.reach.default", value.toString());
+                return true;
+            }
+
             if (player.getGameMode() == GameMode.CREATIVE) {
-                blockReachAtt.setBaseValue(5);
+                value = 5.0;
             } else {
-                blockReachAtt.setBaseValue(4.5);
-            }                                            
-            entityReachAtt.setBaseValue(3.5);
-            chatLogger.info(commandSender, "bme.reach.default", null);
+                value = 4.5;
+            }
+            blockReachAtt.setBaseValue(value);
+            value = 3.5;                                          
+            entityReachAtt.setBaseValue(value);
+            chatLogger.info(commandSender, "bme.reach.default", value.toString());
             return true;
         }
 

@@ -16,12 +16,6 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-/*
-    TODO:
-    prefix
-    colors (success/error/warning)
-    well, send message
- */
 
 package com.github.dixiecyanide.btemoreenhanced.logger;
 
@@ -45,8 +39,8 @@ import com.google.gson.reflect.TypeToken;
 public class Logger {
     private static final Gson gson = new GsonBuilder().create();
     private static final Type STRING_MAP_TYPE = new TypeToken<Map<String, String>>() {}.getType();
-    Map<String, String> strings;
-    String prefix;
+    private Map<String, String> strings;
+    private String prefix;
     
     public Logger() {
         InputStream iStream = this.getClass().getClassLoader().getResourceAsStream("strings.json");
@@ -54,11 +48,6 @@ public class Logger {
         strings = gson.fromJson(reader, STRING_MAP_TYPE);
         prefix = (ChatColor.DARK_PURPLE + strings.get("prefix"));
     }
-
-    //public void info(CommandSender sender, String messageCode){
-    //    String msg = compose(messageCode, "info");
-    //    sender.sendMessage(msg);
-    //}
 
     public void info(CommandSender sender, String messageCode, @Nullable String argument){
         String msg = compose(messageCode, "info", argument);

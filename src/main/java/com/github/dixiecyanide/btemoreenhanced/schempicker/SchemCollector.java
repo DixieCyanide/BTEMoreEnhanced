@@ -23,7 +23,10 @@ import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -31,52 +34,63 @@ import org.bukkit.plugin.Plugin;
 public class SchemCollector {
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
     private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
-    private static String treepackFolder = plugin.getConfig().getString("TreepackFolder");
-    private static File folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + treepackFolder);
+    private static ArrayList<String> treepacksFolders = new ArrayList<>();
+    private static File folderWE = new File(we.getDataFolder() + File.separator + "schematics");
 
-    private static final List<String> directories = new ArrayList<>();
-    private static final List<String> schems = new ArrayList<>();
+    private static final Map<String, List<String>> directories = new HashMap<>();
+    private static final Map<String, List<String>> schems = new HashMap<>();
 
     public SchemCollector () {
-        directories.addAll(collectFiles(folderWE.listFiles()));
+        treepacksFolders.add(plugin.getConfig().getString("TreepackFolder"));
+        if (!plugin.getConfig().getString("TreepackAddons").equals("")) {
+            treepacksFolders.addAll(Arrays.asList(plugin.getConfig().getString("TreepackAddons").split(","))); // cus i need default pack always first and i think it could be done easier, but whatever...
+        }
+
+        for(String folder : treepacksFolders) {
+            File folderFile = new File(folderWE + File.separator + folder);
+            List<String> folderFiles = (collectFiles(folderFile.listFiles())); //these similar names are not really good, despite being technically descriptive
+            directories.put(folderFile.getName(), folderFiles);
+        }
     }
     
     private static List<String> collectFiles (File[] files) {
         List<String> interDirecs = new ArrayList<>();
         
         for (File file : files) {
-            if (!file.isDirectory()) {
-                String fullFileName = file.getName();
-                String fileExt = fullFileName.substring(fullFileName.lastIndexOf("."));
-                String fileName = fullFileName.substring(0, fullFileName.length() - fileExt.length());
-                String directory = file.toString().substring(folderWE.toString().length()); // fucking awful
-                
-                if (!schems.contains(fileName)) {
-                    schems.add(fileName);
-                }
-                if (!interDirecs.contains(directory)) {
-                    interDirecs.add(directory);
-                }
-            } else {
+            if (file.isDirectory()) {
                 interDirecs.addAll(collectFiles(file.listFiles()));
+                continue;
+            }
+
+            String fullFileName = file.getName();
+            String fileName = fullFileName.substring(0, fullFileName.indexOf("."));
+            String directory = file.toString().substring(folderWE.toString().length());
+            String folderName = directory.substring(1, directory.indexOf(File.separator,1));
+
+            if (!schems.containsKey(folderName)) {
+                we.getLogger().warning("created folder key");
+                schems.put(folderName, Arrays.asList(fileName));
+            }
+            for (Map.Entry<String, List<String>> entry : schems.entrySet()) {
+                if (entry.getKey().equals(folderName) && !entry.getValue().contains(fileName)) {
+                    List<String> newList = new ArrayList<>();
+                    newList.addAll(entry.getValue());
+                    newList.addLast(fileName);
+                    schems.replace(folderName, newList);
+                }
+            }   
+            if (!interDirecs.contains(directory)) {
+                interDirecs.add(directory);
             }
         }
         return interDirecs;
     }
     
-    public static List<String> getDirectories() {
+    public static Map<String, List<String>> getDirectories() {
         return directories;
     }
 
-    public static List<String> getSchematics() {
+    public static Map<String, List<String>> getSchematics() {
         return schems;
-    }
-
-    public static void reloadConfig() {
-        treepackFolder = plugin.getConfig().getString("TreepackFolder");
-        folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + treepackFolder);
-        directories.clear();
-        schems.clear();
-        directories.addAll(collectFiles(folderWE.listFiles()));
     }
 }

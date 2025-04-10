@@ -23,21 +23,48 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.userdata.UdUtils;
+
 public class SchemBrush {
     private final String[] args;
-    final List<String> directoies = SchemCollector.getDirectories();
-    final List<String> schematics = SchemCollector.getSchematics();
+    private static final BTEMoreEnhanced bme = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
+    private static UdUtils udUtils = bme.getUdUtils();
+    final Map<String, List<String>> directoies = SchemCollector.getDirectories();
+    final Map<String, List<String>> schematics = SchemCollector.getSchematics();
     
     public SchemBrush(String[] args) {
         this.args = args;
     }
 
-    public List<String> itemTabCompleter () {
-        List<String> schemDirs = directoies;
-        List<String> schems = schematics;
+    public List<String> itemTabCompleter (UUID id) {
+        List<String> schemDirs = new ArrayList<>();
+        List<String> schems = new ArrayList<>();
+        List<String> unusedTreepacks = 
+            Arrays.asList(udUtils.getOnlineUdValue(id, "UnusedTreepacks")
+            .toString()
+            .substring(1, udUtils.getOnlineUdValue(id, "UnusedTreepacks").toString().length() - 1)
+            .replace(" ", "")
+            .split(","));
+
+        for (Map.Entry<String, List<String>> entry : directoies.entrySet()) {
+            Player player = Bukkit.getPlayer(id);
+            player.sendMessage(unusedTreepacks.toString());
+            if (unusedTreepacks.contains(entry.getKey())) {
+                continue;
+            }
+            schemDirs.addAll(directoies.get(entry.getKey()));
+            schems.addAll(schematics.get(entry.getKey()));
+        }
+        
         List<String> itemTypes = new ArrayList<>();
         String regex = "^";
         Integer index = 0;
@@ -78,27 +105,35 @@ public class SchemBrush {
     }
 
     // throw error if 0 schematics returned
-    public List<String> argsProcessing(Boolean needFullDirs) {
-        List<String> schemDirs = directoies;
+    public List<String> argsProcessing(UUID id, Boolean needFullDirs) {
+        List<String> schemDirs = new ArrayList<>();
+        List<String> unusedTreepacks = Arrays.asList(udUtils.getOnlineUdValue(id, "UnusedTreepacks").toString());
+        
+        for (Map.Entry<String, List<String>> entry : directoies.entrySet()) {
+            if (unusedTreepacks.contains(entry.getKey())) {
+                continue; // just skip entry if used doesn't want to use it
+            }
+            schemDirs.addAll(entry.getValue());
+        }
         String regex = "^";
 
         if (args[0].equals("-s")) {
-            if (!needFullDirs){
+            if (!needFullDirs) {
                 if (args[1].indexOf(",") >= 0) {
                     return List.of(args[1].split(","));
                 }
                 return List.of(args[1]);
-            } else {
-                Pattern pattern;
-                if (args[1].indexOf(",") >= 0) {
-                    pattern = Pattern.compile(String.format("^.*%s.*", processMultiarg(args[1], "")));
-                } else {
-                    pattern = Pattern.compile(String.format("(^.*%s.*)", args[1]));
-                }
-                return schemDirs.stream()
-                    .filter(pattern.asPredicate())
-                    .collect(Collectors.toList());
             }
+
+            Pattern pattern;
+            if (args[1].indexOf(",") >= 0) {
+                pattern = Pattern.compile(String.format("^.*%s.*", processMultiarg(args[1], "")));
+            } else {
+                pattern = Pattern.compile(String.format("(^.*%s.*)", args[1]));
+            }
+            return schemDirs.stream()
+                .filter(pattern.asPredicate())
+                .collect(Collectors.toList());
         }
 
         for (String arg : args) {

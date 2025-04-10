@@ -21,9 +21,11 @@ package com.github.dixiecyanide.btemoreenhanced.commands;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
+import com.github.dixiecyanide.btemoreenhanced.userdata.UdUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -37,24 +39,30 @@ import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.command.BiomeCommands;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BiomeTypes;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 public class Terraform implements TabExecutor {
     private static final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
-    private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
     private static final BTEMoreEnhanced bme = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
-    private static Integer defaultTopRemove = plugin.getConfig().getInt("DefaultTopRemove");
-    private static Integer defaultBotRemove = plugin.getConfig().getInt("DefaultBotRemove");
+    private static UdUtils udUtils;
+    private Integer botRemove;
+    private Integer topRemove;
+    private String block;
+    private String biome;
     private EditSession editSession;
     private Logger chatLogger;
+    
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
         chatLogger = bme.getBMEChatLogger();
@@ -86,23 +94,30 @@ public class Terraform implements TabExecutor {
         com.sk89q.worldedit.entity.Player p = new BukkitPlayer((WorldEditPlugin) we, player);
         List<Integer> argsList = new ArrayList<>();
         argsList.add(Integer.parseInt(args[0]) - 1);
+        udUtils = bme.getUdUtils();
+        UUID id = player.getUniqueId();
+
+        topRemove = Integer.parseInt(udUtils.getOnlineUdValue(id, "TerrTop").toString());
+        botRemove = Integer.parseInt(udUtils.getOnlineUdValue(id, "TerrBot").toString());
+        block = udUtils.getOnlineUdValue(id, "TerrBlock").toString();
+        biome = udUtils.getOnlineUdValue(id, "TerrBiome").toString();
         
         // In case if defaults are disabled
-        if (defaultBotRemove < 0) {                                              
-            defaultBotRemove = 0;
+        if (botRemove < 0) {                                              
+            botRemove = 0;
         }
-        if (defaultTopRemove < 0) {
-            defaultTopRemove = 0;
+        if (topRemove < 0) {
+            topRemove = 0;
         } 
 
         switch (args.length) {
             case 1:
-                argsList.add(defaultBotRemove);
-                argsList.add(defaultTopRemove);
+                argsList.add(botRemove);
+                argsList.add(topRemove);
                 break;
             case 2:
                 argsList.add(Integer.parseInt(args[1]));
-                argsList.add(defaultTopRemove);
+                argsList.add(topRemove);
                 break;
             case 3:
                 argsList.add(Integer.parseInt(args[1]));
@@ -153,10 +168,22 @@ public class Terraform implements TabExecutor {
                 reg.setMaximumY(argsList.get(0));
                 editSession.setBlocks(region, BlockTypes.STONE.getDefaultState());
                 reg.setMinimumY(argsList.get(0));
-                editSession.setBlocks(region, BlockTypes.EMERALD_BLOCK.getDefaultState());
+                editSession.setBlocks(region, BlockTypes.get(block).getDefaultState());
             } catch (MaxChangedBlocksException e) {
                 chatLogger.error(commandSender, "bme.limit", null);
                 return true;
+            }
+
+            if (!biome.equals("none")) {
+                BiomeCommands bc = new BiomeCommands();
+                reg.setMaximumY(10000); // such values so biome will be from top to bottom 
+                reg.setMinimumY(-1000);
+                
+                try {
+                    bc.setBiome(p, selectionWorld, localSession, editSession, BiomeTypes.get(biome), false);
+                } catch (WorldEditException e) {
+                    // error
+                }
             }
 
             if(reg.getMaximumY() < (ogVertBorders[0])) {
@@ -180,11 +207,22 @@ public class Terraform implements TabExecutor {
                 reg.setPos1(BlockVector3.at(ogReg.getPos1().getX(), argsList.get(0), ogReg.getPos1().getZ()));
                 editSession.setBlocks(region, BlockTypes.STONE.getDefaultState());
                 reg.setPos2(BlockVector3.at(ogReg.getPos2().getX(), argsList.get(0), ogReg.getPos2().getZ()));
-                editSession.setBlocks(region, BlockTypes.EMERALD_BLOCK.getDefaultState());
+                editSession.setBlocks(region, BlockTypes.get(block).getDefaultState());
             } catch (MaxChangedBlocksException e) {
                 chatLogger.error(commandSender, "bme.limit", null);
-
                 return true;
+            }
+            
+            if (!biome.equals("none")) {
+                BiomeCommands bc = new BiomeCommands();
+                reg.setPos1(BlockVector3.at(ogReg.getPos1().getX(), 10000, ogReg.getPos1().getZ()));
+                reg.setPos2(BlockVector3.at(ogReg.getPos2().getX(), -1000, ogReg.getPos2().getZ()));
+
+                try {
+                    bc.setBiome(p, selectionWorld, localSession, editSession, BiomeTypes.get(biome), false);
+                } catch (WorldEditException e) {
+                    // wrong biome name error
+                }
             }
 
             reg.setPos1(ogReg.getPos1());
@@ -203,31 +241,31 @@ public class Terraform implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command cmd, String label, String[] args) {
         final List<String> completions = new ArrayList<>();
-        
+        Player player = (Player) commandSender;
+        udUtils = bme.getUdUtils();
+        UUID id = player.getUniqueId();
+
+        topRemove = Integer.parseInt(udUtils.getOnlineUdValue(id, "TerrTop").toString());
+        botRemove = Integer.parseInt(udUtils.getOnlineUdValue(id, "TerrBot").toString());
+
         switch (args.length) {
             case 1:
-                Player player = (Player) commandSender;
                 Integer playerHeight = player.getLocation().getBlockY();
                 completions.add(playerHeight.toString());
                 break;
             case 2:
-                if (defaultBotRemove > -1) {
-                    completions.add(defaultBotRemove.toString());
+                if (botRemove > -1) {
+                    completions.add(botRemove.toString());
                 }    
                 break;
             case 3: 
-                if (defaultTopRemove > -1) {
-                    completions.add(defaultTopRemove.toString());
+                if (topRemove > -1) {
+                    completions.add(topRemove.toString());
                 } 
                 break;
             default:
                 break;
         }
         return completions;
-    }
-
-    public static void reloadConfig() {
-        defaultTopRemove = plugin.getConfig().getInt("DefaultTopRemove");
-        defaultBotRemove = plugin.getConfig().getInt("DefaultBotRemove");
     }
 }
