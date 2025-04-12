@@ -30,8 +30,6 @@ import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
 
-import net.md_5.bungee.api.ChatColor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,25 +47,25 @@ public class TreeBrush implements TabExecutor {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            chatLogger.error(commandSender, "bme.not-a-player", null);
+            chatLogger.error(commandSender, "bme.error.not-a-player", null);
             return true;
         }
         if (Bukkit.getPluginManager().getPlugin("SchematicBrushReborn") == null) {
-            chatLogger.error(commandSender, "bme.treebr.no-plugin", null);
+            chatLogger.error(commandSender, "bme.error.treebr.no-plugin", null);
             return true;
         }
         if (args.length == 0) {
-            chatLogger.error(commandSender, "bme.treebr.no-type", null);
+            chatLogger.error(commandSender, "bme.error.treebr.no-type", null);
             return true;
         }
         schemNames = schemBrush.argsProcessing(player.getUniqueId(), false);
         if (schemNames.isEmpty()) {
-            chatLogger.warning(commandSender, "bme.treebr.zero-schems", null);
+            chatLogger.warning(commandSender, "bme.warn.treebr.zero-schems", null);
             return true;
         }
 
-        commandSender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
-        // Bukkit.dispatchCommand(commandSender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
+        // commandSender.sendMessage(ChatColor.AQUA + "schbr " + String.join("@*!* ", schemNames) + "@*!* -place:bottom -yoff:1");  // debug
+        Bukkit.dispatchCommand(commandSender, "schbr " + String.join("@*!* ", schemNames) + "*@*!* -place:bottom -yoff:1"); // release
         return true;
     }
 
@@ -102,7 +100,7 @@ public class TreeBrush implements TabExecutor {
             completions.add("-s");
             completions.add("any");
         } else if (!args[0].equals("-s")){
-            completions.add(0, "any");
+            completions.add("any");
         }
         return completions;
     }

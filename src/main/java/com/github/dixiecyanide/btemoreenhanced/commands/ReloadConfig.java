@@ -21,6 +21,7 @@ package com.github.dixiecyanide.btemoreenhanced.commands;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
+import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemCollector;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -39,7 +40,12 @@ public class ReloadConfig implements CommandExecutor {
         }
 
         plugin.reloadConfig();
-        chatLogger.info(commandSender, "bme.reloaded", null);
+        boolean reloadResult = SchemCollector.reloadPlugin();
+        if (reloadResult == false) {
+            chatLogger.error(commandSender, "bme.error.schemcol.no-treepacks", null);
+            return true;
+        }
+        chatLogger.info(commandSender, "bme.info.reloaded", null);
         return true;
     }
 }

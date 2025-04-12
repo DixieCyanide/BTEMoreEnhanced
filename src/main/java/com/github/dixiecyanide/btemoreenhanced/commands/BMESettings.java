@@ -63,7 +63,7 @@ public class BMESettings implements TabExecutor {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            chatLogger.error(commandSender, "bme.not-a-player", null);
+            chatLogger.error(commandSender, "bme.error.not-a-player", null);
             return true;
         }
 
@@ -78,12 +78,12 @@ public class BMESettings implements TabExecutor {
         }
         if (args.length == 2) {
             Player player = (Player) commandSender;
-            bme.getUdUtils().updateUd2(player.getUniqueId(), args[0], args[1]);
-            chatLogger.info(commandSender, "bme.setting-changed", null);
+            bme.getUdUtils().updateUd(player.getUniqueId(), args[0], args[1]);
+            chatLogger.info(commandSender, "bme.info.settings.changed", null);
             return true;
         }
 
-        chatLogger.error(commandSender, "bme.invalid-arg", null);
+        chatLogger.error(commandSender, "bme.error.invalid-arg", null);
         return true;
     }
 

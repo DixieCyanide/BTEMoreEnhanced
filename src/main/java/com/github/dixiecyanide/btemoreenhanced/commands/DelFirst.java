@@ -58,7 +58,7 @@ public class DelFirst implements CommandExecutor {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            chatLogger.error(commandSender, "bme.not-a-player", null);
+            chatLogger.error(commandSender, "bme.error.not-a-player", null);
             return true;
         }
         Player player = (Player) commandSender;
@@ -69,15 +69,15 @@ public class DelFirst implements CommandExecutor {
             try {
                 numToDelete = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
-                chatLogger.error(commandSender, "bme.not-an-integer", null);
+                chatLogger.error(commandSender, "bme.error.not-an-integer", null);
                 return true;
             }
         }
         if (numToDelete == 0) {
-            chatLogger.error(commandSender, "bme.selection.delete.zero", null);
+            chatLogger.error(commandSender, "bme.error.selection.delete.zero", null);
             return true;
         } else if (numToDelete < 0) {
-            chatLogger.error(commandSender, "bme.selection.delete.negative", null);
+            chatLogger.error(commandSender, "bme.error.selection.delete.negative", null);
             return true;
         }
 
@@ -90,12 +90,12 @@ public class DelFirst implements CommandExecutor {
             if (selectionWorld == null) throw new IncompleteRegionException();
             region = localSession.getSelection(selectionWorld);
         } catch (IncompleteRegionException e) {
-            chatLogger.warning(commandSender, "bme.no-selection", null);
+            chatLogger.warning(commandSender, "bme.warn.no-selection", null);
             return true;
         }
 
         if(!(region instanceof Polygonal2DRegion) && !(region instanceof ConvexPolyhedralRegion)) {
-            chatLogger.warning(commandSender, "bme.selection.wrong-selection", null);
+            chatLogger.warning(commandSender, "bme.warn.selection.wrong-selection", null);
             return true;
         }
 
@@ -104,7 +104,7 @@ public class DelFirst implements CommandExecutor {
             List<BlockVector2> points = reg.getPoints();
 
             if (numToDelete > points.size() - 1) {
-                chatLogger.error(commandSender, "bme.selection.delete.many", String.valueOf(points.size()));
+                chatLogger.error(commandSender, "bme.error.selection.delete.many", String.valueOf(points.size()));
                 return true;
             }
 
@@ -119,7 +119,7 @@ public class DelFirst implements CommandExecutor {
             Collection<BlockVector3> verts = reg.getVertices();
             
             if (numToDelete > verts.size() - 1) {
-                chatLogger.error(commandSender, "bme.selection.delete.many", String.valueOf(verts.size()));
+                chatLogger.error(commandSender, "bme.error.selection.delete.many", String.valueOf(verts.size()));
                 return true;
             }
 
@@ -140,7 +140,7 @@ public class DelFirst implements CommandExecutor {
             localSession.setRegionSelector(selectionWorld, newRegion);
             newRegion.explainRegionAdjust(p, localSession);
         } 
-        chatLogger.info(commandSender, "bme.selection.edited", null);
+        chatLogger.info(commandSender, "bme.info.selection.edited", null);
         return true;
     }
 }

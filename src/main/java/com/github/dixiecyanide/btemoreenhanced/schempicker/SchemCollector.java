@@ -41,6 +41,15 @@ public class SchemCollector {
     private static final Map<String, List<String>> schems = new HashMap<>();
 
     public SchemCollector () {
+        init();
+    }
+
+    private static boolean init() {
+        if (plugin.getConfig().getString("TreepackFolder").strip().equals("") &&
+            plugin.getConfig().getString("TreepackAddons").strip().equals("")) {
+            we.getLogger().severe("No treepack names detected, //wood and //treebr will not work correctly, please check config.");
+            return false;
+        }
         treepacksFolders.add(plugin.getConfig().getString("TreepackFolder"));
         if (!plugin.getConfig().getString("TreepackAddons").equals("")) {
             treepacksFolders.addAll(Arrays.asList(plugin.getConfig().getString("TreepackAddons").split(","))); // cus i need default pack always first and i think it could be done easier, but whatever...
@@ -51,6 +60,7 @@ public class SchemCollector {
             List<String> folderFiles = (collectFiles(folderFile.listFiles())); //these similar names are not really good, despite being technically descriptive
             directories.put(folderFile.getName(), folderFiles);
         }
+        return true;
     }
     
     private static List<String> collectFiles (File[] files) {
@@ -68,7 +78,6 @@ public class SchemCollector {
             String folderName = directory.substring(1, directory.indexOf(File.separator,1));
 
             if (!schems.containsKey(folderName)) {
-                we.getLogger().warning("created folder key");
                 schems.put(folderName, Arrays.asList(fileName));
             }
             for (Map.Entry<String, List<String>> entry : schems.entrySet()) {
@@ -84,6 +93,15 @@ public class SchemCollector {
             }
         }
         return interDirecs;
+    }
+
+    public static boolean reloadPlugin() {
+        directories.clear();
+        schems.clear();
+        if (init() == false) {
+            return false;
+        }
+        return true;
     }
     
     public static Map<String, List<String>> getDirectories() {

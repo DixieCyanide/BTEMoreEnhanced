@@ -60,28 +60,28 @@ public class DelPoint implements CommandExecutor {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            chatLogger.error(commandSender, "bme.not-a-player", null);
+            chatLogger.error(commandSender, "bme.error.not-a-player", null);
             return true;
         }
         Player player = (Player) commandSender;
         com.sk89q.worldedit.entity.Player p = new BukkitPlayer((WorldEditPlugin) we, player);
 
         if (args.length < 1) {
-            chatLogger.error(commandSender, "bme.selection.delete.not-specified", null);
+            chatLogger.error(commandSender, "bme.error.selection.delete.not-specified", null);
             return true;
         }
         int numToDelete;
         try {
             numToDelete = Integer.parseInt(args[0]);
         } catch (NumberFormatException e) {
-            chatLogger.error(commandSender, "bme.not-an-integer", null);
+            chatLogger.error(commandSender, "bme.error.not-an-integer", null);
             return true;
         }
         if (numToDelete < 0) {
-            chatLogger.error(commandSender, "bme.selection.delete.negativeth", null);
+            chatLogger.error(commandSender, "bme.error.selection.delete.negativeth", null);
             return true;
         } else if (numToDelete == 0) {
-            chatLogger.error(commandSender, "bme.selection.delete.zeroth", null);
+            chatLogger.error(commandSender, "bme.error.selection.delete.zeroth", null);
             return true;
         }
 
@@ -94,12 +94,12 @@ public class DelPoint implements CommandExecutor {
             if (selectionWorld == null) throw new IncompleteRegionException();
             region = localSession.getSelection(selectionWorld);
         } catch (IncompleteRegionException e) {
-            chatLogger.warning(commandSender, "bme.no-selection", null);
+            chatLogger.warning(commandSender, "bme.warn.no-selection", null);
             return true;
         }
 
         if(!(region instanceof Polygonal2DRegion) && !(region instanceof ConvexPolyhedralRegion)) {
-            chatLogger.warning(commandSender, "bme.selection.wrong-selection", null);
+            chatLogger.warning(commandSender, "bme.warn.selection.wrong-selection", null);
             return true;
         }
 
@@ -108,7 +108,7 @@ public class DelPoint implements CommandExecutor {
             List<BlockVector2> points = reg.getPoints();
     
             if (numToDelete > points.size()) {
-                chatLogger.error(commandSender, "bme.selection.delete.nonexistent", String.valueOf(points.size()));
+                chatLogger.error(commandSender, "bme.error.selection.delete.nonexistent", String.valueOf(points.size()));
                 return true;
             }
     
@@ -124,7 +124,7 @@ public class DelPoint implements CommandExecutor {
             Collection<BlockVector3> verts = reg.getVertices();
             
             if (numToDelete > verts.size()) {
-                chatLogger.error(commandSender, "bme.selection.delete.nonexistent", String.valueOf(verts.size()));
+                chatLogger.error(commandSender, "bme.error.selection.delete.nonexistent", String.valueOf(verts.size()));
                 return true;
             }
 
@@ -147,7 +147,7 @@ public class DelPoint implements CommandExecutor {
             localSession.setRegionSelector(selectionWorld, newRegion);
             newRegion.explainRegionAdjust(p, localSession);
         }
-        chatLogger.info(commandSender, "bme.selection.point-deleted", String.valueOf(numToDelete));
+        chatLogger.info(commandSender, "bme.info.selection.point-deleted", String.valueOf(numToDelete));
         return true;        
     }
 }

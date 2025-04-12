@@ -66,7 +66,7 @@ public class UdUtils {
         try {
             userdataFile.createNewFile();
         } catch (IOException e) {
-            e.printStackTrace();
+            checkUdFolder();
         }
     }
 
@@ -90,26 +90,7 @@ public class UdUtils {
         }
     }
 
-    public void updateUd(UUID id, Map<String, Object> udMap) {
-        File userdataFile = new File(userdataDir + File.separator + id.toString() + ".yml");
-        PrintWriter writer;
-
-        DumperOptions options = new DumperOptions();
-        options.setIndent(2);
-        options.setPrettyFlow(true);
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-
-        try {
-            writer = new PrintWriter(userdataFile);
-            Yaml yaml = new Yaml(options);
-            yaml.dump(udMap, writer);
-        } catch (FileNotFoundException e) {
-            createUd(id);
-            writeDefaultUd(id);
-        }
-    }
-
-    public void updateUd2(UUID id, String key, Object value) {
+    public void updateUd(UUID id, String key, Object value) {
         File userdataFile = new File(userdataDir + File.separator + id.toString() + ".yml");
         Map<String, Object> udMap = getUd(id);
         PrintWriter writer;
@@ -206,7 +187,7 @@ public class UdUtils {
                     Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
                     value = tfMap.get(key);
                 } catch (Exception e) {
-                    updateUd2(id, "Terraform", getDefaultUd().get("Terraform"));
+                    updateUd(id, "Terraform", getDefaultUd().get("Terraform"));
                 }
             break;
             case "TerrBot":
@@ -214,7 +195,7 @@ public class UdUtils {
                     Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
                     value = tfMap.get(key);
                 } catch (Exception e) {
-                    updateUd2(id, "Terraform", getDefaultUd().get("Terraform"));
+                    updateUd(id, "Terraform", getDefaultUd().get("Terraform"));
                 }
             break;
             case "TerrBlock":
@@ -222,7 +203,7 @@ public class UdUtils {
                     Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
                     value = tfMap.get(key);
                 } catch (Exception e) {
-                    updateUd2(id, "Terraform", getDefaultUd().get("Terraform"));
+                    updateUd(id, "Terraform", getDefaultUd().get("Terraform"));
                 }
             break;
             case "TerrBiome":
@@ -230,11 +211,11 @@ public class UdUtils {
                     Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
                     value = tfMap.get(key);
                 } catch (Exception e) {
-                    updateUd2(id, "Terraform", getDefaultUd().get("Terraform"));
+                    updateUd(id, "Terraform", getDefaultUd().get("Terraform"));
                 }
             break;
             case "UnusedTreepacks":
-                value = udMap.get(key);
+                value = udMap.get(key).toString().substring(1, udMap.get(key).toString().length() - 1);
             break;
         
             default:

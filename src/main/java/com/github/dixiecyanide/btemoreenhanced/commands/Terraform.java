@@ -70,22 +70,22 @@ public class Terraform implements TabExecutor {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            chatLogger.error(commandSender, "bme.not-a-player", null);
+            chatLogger.error(commandSender, "bme.error.not-a-player", null);
             return true;
         }
         if (args.length == 0) {
-            chatLogger.error(commandSender, "bme.terraform.no-height", null);
+            chatLogger.error(commandSender, "bme.error.terraform.no-height", null);
             return true;
         }
         if (args.length > 3) {
-            chatLogger.error(commandSender, "bme.too-many-args", null);
+            chatLogger.error(commandSender, "bme.error.too-many-args", null);
             return true;
         }
         for (String arg : args) {
             try {
                 Integer.valueOf(arg);
             } catch (NumberFormatException e) {
-                chatLogger.error(commandSender, "bme.not-an-integer", null);
+                chatLogger.error(commandSender, "bme.error.not-an-integer", null);
                 return true;
             }
         }
@@ -125,7 +125,7 @@ public class Terraform implements TabExecutor {
                 break;
             default:
                 // I mean there can't be less than 0 arguments...    
-                chatLogger.error(commandSender, "bme.too-many-args", null);                        
+                chatLogger.error(commandSender, "bme.error.too-many-args", null);                        
                 break;
         }
         
@@ -139,7 +139,7 @@ public class Terraform implements TabExecutor {
             if (selectionWorld == null) throw new IncompleteRegionException();
             region = localSession.getSelection(selectionWorld);
         } catch (IncompleteRegionException e) {
-            chatLogger.warning(commandSender, "bme.no-selection", null);
+            chatLogger.warning(commandSender, "bme.warn.no-selection", null);
             return true;
         }
 
@@ -170,7 +170,7 @@ public class Terraform implements TabExecutor {
                 reg.setMinimumY(argsList.get(0));
                 editSession.setBlocks(region, BlockTypes.get(block).getDefaultState());
             } catch (MaxChangedBlocksException e) {
-                chatLogger.error(commandSender, "bme.limit", null);
+                chatLogger.error(commandSender, "bme.error.limit", null);
                 return true;
             }
 
@@ -209,7 +209,7 @@ public class Terraform implements TabExecutor {
                 reg.setPos2(BlockVector3.at(ogReg.getPos2().getX(), argsList.get(0), ogReg.getPos2().getZ()));
                 editSession.setBlocks(region, BlockTypes.get(block).getDefaultState());
             } catch (MaxChangedBlocksException e) {
-                chatLogger.error(commandSender, "bme.limit", null);
+                chatLogger.error(commandSender, "bme.error.limit", null);
                 return true;
             }
             
@@ -228,12 +228,12 @@ public class Terraform implements TabExecutor {
             reg.setPos1(ogReg.getPos1());
             reg.setPos2(ogReg.getPos2());
         } else {
-            chatLogger.warning(commandSender, "bme.terraform.wrong-selection", null);
+            chatLogger.warning(commandSender, "bme.warn.terraform.wrong-selection", null);
             return true;
         }
 
         localSession.remember(editSession);
-        chatLogger.info(commandSender, "bme.terraform.complete", null);
+        chatLogger.info(commandSender, "bme.info.terraform.complete", null);
 
         return true;
     }

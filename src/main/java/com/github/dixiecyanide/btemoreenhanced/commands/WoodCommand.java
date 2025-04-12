@@ -57,18 +57,18 @@ public class WoodCommand implements TabExecutor {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            chatLogger.error(commandSender, "bme.not-a-player", null);
+            chatLogger.error(commandSender, "bme.error.not-a-player", null);
             return true;
         }
         Integer argsLen = args.length;
         Player player = (Player) commandSender;
         com.sk89q.worldedit.entity.Player p = new BukkitPlayer((WorldEditPlugin) we, player);
         if (argsLen == 0) {
-            chatLogger.error(commandSender, "bme.treebr.no-type", null);
+            chatLogger.error(commandSender, "bme.error.treebr.no-type", null);
             return false;
         }
         if (argsLen == 1 || (args[0].equals("-s") && argsLen < 3)) {
-            chatLogger.error(commandSender, "bme.wood.no-surface", null);
+            chatLogger.error(commandSender, "bme.error.wood.no-surface", null);
             return false;
         }
 
@@ -142,9 +142,10 @@ public class WoodCommand implements TabExecutor {
                 completions.addAll(CommandUtil.fixSuggestions("//set " + args[argsLen - 1], suggestEvent.getSuggestions()));
             }
         } else if (argsLen < 2) {
-            completions.add(0, "-s");
+            completions.add("-s");
+            completions.add("any");
         } else if (!args[0].equals("-s")){
-            completions.add(0, "any");
+            completions.add("any");
         }
         return completions;
     }

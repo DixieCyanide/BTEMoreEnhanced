@@ -84,8 +84,7 @@ public class Wood {
     private static final Plugin plugin = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
     private static final BTEMoreEnhanced bme = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
     private Logger chatLogger;
-    private static String treepackFolder = plugin.getConfig().getString("TreepackFolder");
-    private static File folderWE = new File(we.getDataFolder() + File.separator + "schematics" + File.separator + treepackFolder);
+    private static File folderWE = new File(we.getDataFolder() + File.separator + "schematics");
     private final int MAX_TRIES = plugin.getConfig().getInt("MaxTries");
 
     public Wood(Player p, CommandSender commandSender, String[] schemArgs, String target, String[] flags) {
@@ -105,7 +104,7 @@ public class Wood {
                 try {
                     this.radius = Float.parseFloat(flag.substring(flag.indexOf(':') + 1));
                 } catch (Exception e) {
-                    commandSender.sendMessage(ChatColor.RED + "Radius is not a number.");
+                    chatLogger.error(commandSender, "bme.error.NaN", null);
                     return;
                 }
             }
@@ -134,11 +133,11 @@ public class Wood {
             if (selectionWorld == null) throw new IncompleteRegionException();
             region = localSession.getSelection(selectionWorld);
         } catch (IncompleteRegionException ex) {
-            chatLogger.warning(commandSender, "bme.no-selection", null);
+            chatLogger.warning(commandSender, "bme.warn.no-selection", null);
             return;
         }
         if(!(region instanceof Polygonal2DRegion)) {
-            chatLogger.warning(commandSender, "bme.wood.selection.wrong-selection", null);
+            chatLogger.warning(commandSender, "bme.warn.wood.selection.wrong-selection", null);
             return;
         }
 
@@ -158,7 +157,7 @@ public class Wood {
             ClipboardReader reader;
 
             if (file.length() > plugin.getConfig().getInt("MaxSchemSize")) {
-                chatLogger.warning(commandSender, "bme.wood.max-size", null);
+                chatLogger.warning(commandSender, "bme.warn.wood.max-size", null);
                 continue;
             }
 
@@ -170,7 +169,7 @@ public class Wood {
                     schematics.add(clipboard);
                 }
             } catch (Exception e) {
-                chatLogger.warning(commandSender, "bme.wood.damaged", null);
+                chatLogger.warning(commandSender, "bme.warn.wood.damaged", null);
                 continue;
             }
         }
@@ -202,7 +201,7 @@ public class Wood {
         
         Integer regionListSize = regionList.size();
         if (regionListSize < 0){
-            chatLogger.warning(commandSender, "bme.wood.selection.small", null);
+            chatLogger.warning(commandSender, "bme.warn.wood.selection.small", null);
             return;
         }
         Integer randomStartIndex = random.nextInt(regionList.size());
@@ -216,7 +215,7 @@ public class Wood {
         }
 
         if (selectedBlocks == 0) {
-            chatLogger.warning(commandSender, "bme.wood.not-found", null);
+            chatLogger.warning(commandSender, "bme.warn.wood.not-found", null);
             return;
         }
         
@@ -250,7 +249,7 @@ public class Wood {
             try {
                 Operations.completeLegacy(pb.build());
             } catch (MaxChangedBlocksException e) {
-                chatLogger.error(commandSender, "bme.limit", null);
+                chatLogger.error(commandSender, "bme.error.limit", null);
                 return;
             }
         }

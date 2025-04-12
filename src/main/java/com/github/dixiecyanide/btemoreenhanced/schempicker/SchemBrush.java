@@ -28,9 +28,6 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import com.github.dixiecyanide.btemoreenhanced.userdata.UdUtils;
 
@@ -48,17 +45,14 @@ public class SchemBrush {
     public List<String> itemTabCompleter (UUID id) {
         List<String> schemDirs = new ArrayList<>();
         List<String> schems = new ArrayList<>();
-        List<String> unusedTreepacks = 
+        ArrayList<String> unusedTreepacks = new ArrayList<>(
             Arrays.asList(udUtils.getOnlineUdValue(id, "UnusedTreepacks")
             .toString()
-            .substring(1, udUtils.getOnlineUdValue(id, "UnusedTreepacks").toString().length() - 1)
             .replace(" ", "")
-            .split(","));
+            .split(",")));
 
         for (Map.Entry<String, List<String>> entry : directoies.entrySet()) {
-            Player player = Bukkit.getPlayer(id);
-            player.sendMessage(unusedTreepacks.toString());
-            if (unusedTreepacks.contains(entry.getKey())) {
+            if (unusedTreepacks.contains(entry.getKey().toString())) {
                 continue;
             }
             schemDirs.addAll(directoies.get(entry.getKey()));
@@ -107,11 +101,15 @@ public class SchemBrush {
     // throw error if 0 schematics returned
     public List<String> argsProcessing(UUID id, Boolean needFullDirs) {
         List<String> schemDirs = new ArrayList<>();
-        List<String> unusedTreepacks = Arrays.asList(udUtils.getOnlineUdValue(id, "UnusedTreepacks").toString());
+        ArrayList<String> unusedTreepacks = new ArrayList<>(
+            Arrays.asList(udUtils.getOnlineUdValue(id, "UnusedTreepacks")
+            .toString()
+            .replace(" ", "")
+            .split(",")));
         
         for (Map.Entry<String, List<String>> entry : directoies.entrySet()) {
-            if (unusedTreepacks.contains(entry.getKey())) {
-                continue; // just skip entry if used doesn't want to use it
+            if (unusedTreepacks.contains(entry.getKey().toString())) {
+                continue; // just skip entry if user doesn't want to use it
             }
             schemDirs.addAll(entry.getValue());
         }
@@ -155,6 +153,9 @@ public class SchemBrush {
         } else {
             List<String> schemNames = new ArrayList<>();
             for (String schemDir : schemDirs) {
+                if (unusedTreepacks.contains(schemDir.substring(1, schemDir.indexOf(File.separator, 1)))){
+                    continue;
+                }
                 String fullSchemName = schemDir.substring(schemDir.lastIndexOf(File.separator) + 1);
                 String schemExt = fullSchemName.substring(fullSchemName.lastIndexOf("."));
                 String schemName = fullSchemName.substring(0, fullSchemName.length() - schemExt.length());

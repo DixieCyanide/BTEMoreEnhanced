@@ -45,11 +45,11 @@ public class Reach implements TabExecutor {
             return false;
         }
         if (!(commandSender instanceof Player)) {
-            chatLogger.error(commandSender, "bme.not-a-player", null);
+            chatLogger.error(commandSender, "bme.error.not-a-player", null);
             return true;
         }
         if (args.length > 1) {
-            chatLogger.error(commandSender, "bme.too-many-args", null);
+            chatLogger.error(commandSender, "bme.error.too-many-args", null);
             return true;
         }
 
@@ -66,7 +66,7 @@ public class Reach implements TabExecutor {
             if (value != -1) {
                 blockReachAtt.setBaseValue(value);
                 entityReachAtt.setBaseValue(value);
-                chatLogger.info(commandSender, "bme.reach.default", value.toString());
+                chatLogger.info(commandSender, "bme.info.reach.default", value.toString());
                 return true;
             }
 
@@ -78,7 +78,7 @@ public class Reach implements TabExecutor {
             blockReachAtt.setBaseValue(value);
             value = 3.5;                                          
             entityReachAtt.setBaseValue(value);
-            chatLogger.info(commandSender, "bme.reach.default", value.toString());
+            chatLogger.info(commandSender, "bme.info.reach.default", value.toString());
             return true;
         }
 
@@ -86,11 +86,11 @@ public class Reach implements TabExecutor {
             blockReachAtt.setBaseValue(Double.valueOf(args[0]));
             entityReachAtt.setBaseValue(Double.valueOf(args[0]));
         } catch (NumberFormatException e) {
-            chatLogger.error(commandSender, "bme.NaN", null);
+            chatLogger.error(commandSender, "bme.error.NaN", null);
             return true;
         }
 
-        chatLogger.info(commandSender, "bme.reach.changed", args[0]);
+        chatLogger.info(commandSender, "bme.info.reach.changed", args[0]);
         return true;
     }
 

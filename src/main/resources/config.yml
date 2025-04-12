@@ -1,19 +1,28 @@
+# BTEMoreEnhanced config
+# -------------------------------------------------- #
+# update check
+# UpdateCheckEnabled: true (If plugin will check for new GitHub releases and notify)
+  UpdateCheckEnabled: true
+# -------------------------------------------------- #
+# treepacks
+# TreepackFolder: newtrees (Default treepack folder name)
+# TreepackAddons: addon1,addon2 (Addon(s)' folder(s) name(s))
+  TreepackFolder: ""
+  TreepackAddons: ""
+# -------------------------------------------------- #
+# //wood
 # MaxSchemSize: 5120 (In bytes)
 # MaxTries: 60 (Bridons algorithm tries to find a suitable next point for a tree. The narrower/smaller the selection and larger the radius the less likely a point is found per try.
-# So too low of a value will leave holes, while too high and speed will be slower. I suggest you don't touch the number of tries.
-# UpdateCheckEnabled: true (If plugin will check for new GitHub releases)
-# TreepackFolder: newtrees (Treepack folder name)
-# TreepackAddons: addon1, addon2 (Addon(s)' folder(s) name(s))
+  MaxSchemSize: 5120
+  MaxTries: 60
+# -------------------------------------------------- #
+# //terraform
 # DefaultTopRemove: 15 (what value will //terraform command suggest in tab completion, -1 to disable)
 # DefaultBotRemove: 10 (what value will //terraform command suggest in tab completion, -1 to disable)
-# DefaultBlock: "EMERALD_BLOCK" (surface block for //terraform, values are just ingame text ids)
+# DefaultBlock: "emerald_block" (surface block for //terraform, values are just ingame text ids)
 # DefaultBiome: "none" (none for not changing biome, values are just ingame text ids)
-MaxSchemSize: 5120
-MaxTries: 60
-UpdateCheckEnabled: true
-TreepackFolder: ""
-TreepackAddons: ""
-DefaultTopRemove: 15
-DefaultBotRemove: 10
-DefaultBlock: "emerald_block"
-DefaultBiome: "none"
+  DefaultTopRemove: 15
+  DefaultBotRemove: 10
+  DefaultBlock: "emerald_block"
+  DefaultBiome: "none"
+# -------------------------------------------------- #
