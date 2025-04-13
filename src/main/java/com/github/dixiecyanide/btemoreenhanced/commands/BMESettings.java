@@ -25,6 +25,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -70,31 +71,44 @@ public class BMESettings implements TabExecutor {
         InputStream iStream = this.getClass().getClassLoader().getResourceAsStream("settingNames.json");
         Reader reader = new InputStreamReader(iStream, StandardCharsets.UTF_8);
         strings = gson.fromJson(reader, STRING_MAP_TYPE);
+        Player player = (Player) commandSender;
 
-        if (args.length == 0) {
-            gui = new SettingsGUI(strings);
-            gui.getSettings(commandSender);
-            return true;
+        switch (args.length) {
+            case 0:
+                gui = new SettingsGUI(strings);
+                gui.getSettings(commandSender);
+            break;
+            case 1:
+                if (args[0].equals("reset")) {
+                    bme.getUdUtils().writeDefaultUd(player.getUniqueId());
+                    chatLogger.info(commandSender, "bme.info.settings.reset", null);
+                }
+            break;
+            case 2:
+                if (bme.getUdUtils().updateUd(player.getUniqueId(), args[0], args[1])) {
+                    chatLogger.info(commandSender, "bme.info.settings.changed", null);
+                }
+            break;
+            default:
+                chatLogger.error(commandSender, "bme.error.invalid-arg", null);
+            break;
         }
-        if (args.length == 2) {
-            Player player = (Player) commandSender;
-            bme.getUdUtils().updateUd(player.getUniqueId(), args[0], args[1]);
-            chatLogger.info(commandSender, "bme.info.settings.changed", null);
-            return true;
-        }
-
-        chatLogger.error(commandSender, "bme.error.invalid-arg", null);
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String label, String[] args) {
+        ArrayList<String> completions = new ArrayList<>();
+
+        if (args.length == 1) {
+            StringUtil.copyPartialMatches(args[0], new ArrayList<>(Arrays.asList("reset")), completions);
+            return completions;
+        }
         if (args.length != 2) {
             return null;
         }
 
         Actor actor = BukkitAdapter.adapt(commandSender);
-        ArrayList<String> completions = new ArrayList<>();
         CommandSuggestionEvent suggestEvent;
 
         switch (args[0]) {

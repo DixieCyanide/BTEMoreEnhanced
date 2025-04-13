@@ -20,6 +20,8 @@
 package com.github.dixiecyanide.btemoreenhanced.userdata;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.sk89q.worldedit.world.biome.BiomeTypes;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,8 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
-
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -84,16 +87,18 @@ public class UdUtils {
             writer = new PrintWriter(userdataFile);
             Yaml yaml = new Yaml(options);
             yaml.dump(dataMap, writer);
+            bme.putOnlineUd(id, dataMap);
         } catch (FileNotFoundException e) {
             createUd(id);
             writeDefaultUd(id);
         }
     }
 
-    public void updateUd(UUID id, String key, Object value) {
+    public boolean updateUd(UUID id, String key, Object value) {
         File userdataFile = new File(userdataDir + File.separator + id.toString() + ".yml");
         Map<String, Object> udMap = getUd(id);
         PrintWriter writer;
+        CommandSender commandSender = (CommandSender) Bukkit.getPlayer(id);
 
         DumperOptions options = new DumperOptions();
         options.setIndent(2);
@@ -102,42 +107,73 @@ public class UdUtils {
 
         switch (key) {
             case "Reach":
-                udMap.replace(key, (Double) value);
+                try {
+                    udMap.replace(key, (Double) value);
+                } catch (ClassCastException e) {
+                    bme.getBMEChatLogger().error(commandSender, "bme.error.NaN", null);
+                    return false;
+                }
             break;
             case "TerrTop":
                 try {
+                    value = Integer.valueOf(value.toString());
+                } catch (NumberFormatException e) {
+                    bme.getBMEChatLogger().error(commandSender, "bme.error.not-an-integer", null);
+                    return false;
+                }
+                try {
                     Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
                     tfMap.replace(key, value);
                     udMap.replace("Terraform", tfMap);
-                } catch (Exception e) {
+                } catch (ClassCastException e) {
                     udMap.replace("Terraform", getDefaultUd().get("Terraform"));
+                    return false;
+                    // throw wrror
                 }
             break;
             case "TerrBot":
-            try {
-                Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
-                tfMap.replace(key, value);
-                udMap.replace("Terraform", tfMap);
-            } catch (Exception e) {
-                udMap.replace("Terraform", getDefaultUd().get("Terraform"));
-            }
-            break;
-            case "TerrBlock":
-            try {
-                Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
-                tfMap.replace(key, value);
-                udMap.replace("Terraform", tfMap);
-            } catch (Exception e) {
-                udMap.replace("Terraform", getDefaultUd().get("Terraform"));
-            }
-            break;
-            case "TerrBiome":
+                try {
+                    value = Integer.valueOf(value.toString());
+                } catch (NumberFormatException e) {
+                    bme.getBMEChatLogger().error(commandSender, "bme.error.not-an-integer", null);
+                    return false;
+                }
                 try {
                     Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
                     tfMap.replace(key, value);
                     udMap.replace("Terraform", tfMap);
                 } catch (Exception e) {
                     udMap.replace("Terraform", getDefaultUd().get("Terraform"));
+                    return false;
+                    //throw error
+                }
+            break;
+            case "TerrBlock":
+                if (BlockTypes.get(value.toString()) == null) {
+                    bme.getBMEChatLogger().error(commandSender, "bme.error.settings.invalid-block", value.toString());
+                    return false;
+                }
+                try {
+                    Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
+                    tfMap.replace(key, value);
+                    udMap.replace("Terraform", tfMap);
+                } catch (Exception e) {
+                    udMap.replace("Terraform", getDefaultUd().get("Terraform"));
+                    return false;
+                }
+            break;
+            case "TerrBiome":
+                if (BiomeTypes.get(value.toString()) == null) {
+                    bme.getBMEChatLogger().error(commandSender, "bme.error.settings.invalid-biome", value.toString());
+                    return false;
+                }
+                try {
+                    Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
+                    tfMap.replace(key, value);
+                    udMap.replace("Terraform", tfMap);
+                } catch (Exception e) {
+                    udMap.replace("Terraform", getDefaultUd().get("Terraform"));
+                    return false;
                 }
             break;
             case "Terraform":
@@ -147,7 +183,7 @@ public class UdUtils {
                 udMap.replace(key, List.of(value.toString().replace(" ", "").split(",")));
             break;
             default:
-            //throw some error idk
+                bme.getBMEChatLogger().error(commandSender, "bme.error.invalid-arg", null);
             break;
         }
 
@@ -159,7 +195,9 @@ public class UdUtils {
         } catch (FileNotFoundException e) {
             createUd(id);
             writeDefaultUd(id);
+            return false;
         }
+        return true;
     }
 
     public Map<String, Object> getUd(UUID id) {
@@ -227,7 +265,6 @@ public class UdUtils {
 
     public Map<String, Object> getDefaultUd() {
         Map<String, Object> terraformMap = new HashMap<>();
-        
         terraformMap.put("TerrTop", defaultTopRemove);
         terraformMap.put("TerrBot", defaultBotRemove);
         terraformMap.put("TerrBlock", defaultBlock);

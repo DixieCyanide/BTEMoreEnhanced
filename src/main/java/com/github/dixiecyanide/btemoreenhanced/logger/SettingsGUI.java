@@ -79,6 +79,15 @@ public class SettingsGUI {
             msgChangeBtn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
                                        new Text("Click to enter new value")));
 
+        TextComponent resetButton = new TextComponent("\nReset");
+            resetButton.setColor(ChatColor.RED);
+            resetButton.setBold(false);
+            resetButton.setUnderlined(false);
+            resetButton.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                      new Text("Click to reset setting to default values.")));
+            resetButton.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                      "//bmesettings reset"));
+
         for (Integer i = 0; i < 6; i++) {
             msgValueName.setText("\n- " + valueNames.get(i) + ": ");
             msgValue.setText(values.get(i));
@@ -89,6 +98,7 @@ public class SettingsGUI {
             msgHeader.addExtra(msgValue.duplicate());
             msgHeader.addExtra(msgChangeBtn.duplicate());
             }
+        msgHeader.addExtra(resetButton.duplicate());
         commandSender.spigot().sendMessage(msgHeader);
     }
 }

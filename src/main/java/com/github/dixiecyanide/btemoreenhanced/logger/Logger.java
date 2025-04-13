@@ -67,7 +67,7 @@ public class Logger {
     private String compose(String messageCode, String messageType, @Nullable String argument){
         String msg = strings.get(messageCode);
         ChatColor color = ChatColor.WHITE;
-        if (argument != null) {
+        if (argument != null && msg != null) {
             msg = String.format(msg, argument);
         }
         switch (messageType) {
