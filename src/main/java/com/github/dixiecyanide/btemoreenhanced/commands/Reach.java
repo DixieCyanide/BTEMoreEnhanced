@@ -35,12 +35,13 @@ import com.github.dixiecyanide.btemoreenhanced.userdata.UdUtils;
 
 public class Reach implements TabExecutor {
     private static final BTEMoreEnhanced bme = BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class);
-    private static UdUtils udUtils = bme.getUdUtils();
+    private static UdUtils udUtils;
     private Logger chatLogger;
     
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
         chatLogger = bme.getBMEChatLogger();
+        udUtils = bme.getUdUtils();
         if (!commandSender.hasPermission("btemoreenhanced.player.reach") && !commandSender.isOp()) {
             return false;
         }
@@ -61,7 +62,7 @@ public class Reach implements TabExecutor {
         if (args.length == 0) {
             Double value = 4.5;
             
-            value = Double.parseDouble((String) udUtils.getOnlineUdValue(player.getUniqueId(), "Reach"));
+            value = Double.parseDouble((udUtils.getOnlineUdValue(player.getUniqueId(), "Reach").toString()));
 
             if (value != -1) {
                 blockReachAtt.setBaseValue(value);

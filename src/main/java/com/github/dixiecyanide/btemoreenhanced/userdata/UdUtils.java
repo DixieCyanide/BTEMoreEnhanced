@@ -108,7 +108,7 @@ public class UdUtils {
         switch (key) {
             case "Reach":
                 try {
-                    udMap.replace(key, (Double) value);
+                    udMap.replace(key, Double.parseDouble(value.toString()));
                 } catch (ClassCastException e) {
                     bme.getBMEChatLogger().error(commandSender, "bme.error.NaN", null);
                     return false;
