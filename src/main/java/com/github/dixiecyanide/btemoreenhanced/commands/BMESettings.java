@@ -85,6 +85,9 @@ public class BMESettings implements TabExecutor {
                 }
             break;
             case 2:
+                if (args[1].equals("none") && args[0].equals("UnusedTreepacks")){
+                    bme.getUdUtils().updateUd(player.getUniqueId(), args[0], "none");
+                }
                 if (bme.getUdUtils().updateUd(player.getUniqueId(), args[0], args[1])) {
                     chatLogger.info(commandSender, "bme.info.settings.changed", null);
                 }
@@ -123,6 +126,7 @@ public class BMESettings implements TabExecutor {
                 completions.addAll(CommandUtil.fixSuggestions("//setbiome " + args[1], suggestEvent.getSuggestions()));
             case "UnusedTreepacks":
                 ArrayList<String> entryKeys = new ArrayList<>();
+                entryKeys.add("none");
 
                 for (Map.Entry<String, List<String>> entry : SchemCollector.getDirectories().entrySet()) {
                     entryKeys.add(entry.getKey());

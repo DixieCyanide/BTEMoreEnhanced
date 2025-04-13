@@ -180,6 +180,9 @@ public class UdUtils {
                 udMap.replace(key, value);
             break;
             case "UnusedTreepacks":
+                if (value.toString().equals("none")){
+                    value = "";
+                }
                 udMap.replace(key, List.of(value.toString().replace(" ", "").split(",")));
             break;
             default:
