@@ -22,6 +22,7 @@ package com.github.dixiecyanide.btemoreenhanced.wood;
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
 import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemBrush;
+import com.github.dixiecyanide.btemoreenhanced.utils.Utils;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -57,7 +58,7 @@ public class Wood {
     private CommandSender commandSender;
     private final String[] schemArgs;
     private List<String> schemDirs;
-    private String[] targetBlocks;
+    private ArrayList<String> targetBlocks;
     private float radius;
     private float radiusSum;
     private int schematicsOverMaxSize = 0;
@@ -92,8 +93,8 @@ public class Wood {
         this.commandSender = commandSender;
         this.schemArgs = schemArgs;
         this.radius = Float.NaN;
+        this.chatLogger = bme.getBMEChatLogger();
         setTargetBlocks(target);
-        chatLogger = bme.getBMEChatLogger();
 
         for (String flag : flags) {
             if (flag.equals("-includeAir")) {
@@ -116,8 +117,8 @@ public class Wood {
         this.commandSender = commandSender;
         this.schemArgs = schemArgs;
         this.radius = Float.NaN;
+        this.chatLogger = bme.getBMEChatLogger();
         setTargetBlocks(target);
-        chatLogger = bme.getBMEChatLogger();
     }
 
     public void execute() {
@@ -403,11 +404,20 @@ public class Wood {
     
     private void setTargetBlocks(String target) {
         if (target.startsWith("!") && target.length() > 1) {
-            this.targetBlocks = target.substring(1).split(",");
+            this.targetBlocks = new ArrayList<>(List.of(target.substring(1).split(",")));
             this.inverseMask = true;
         } else {
-            this.targetBlocks = target.split(",");
+            this.targetBlocks = new ArrayList<>(List.of(target.split(",")));
         }
+        
+        // legacy (pre 1.13 (numeric)) id check and conversion
+        try {
+            this.targetBlocks = Utils.FixMultiLegacyID(targetBlocks);
+        } catch (NumberFormatException e) {
+            chatLogger.error(commandSender,  "bme.error.invalid-id", e.getMessage());
+        } catch (NullPointerException e) {
+            chatLogger.error(commandSender,  "bme.error.invalid-id", e.getMessage());
+        } // TODO: better use some custom exception like "IvalidLegacyIdException" or something, but later
     }
 
     private boolean matchesTarget(BlockType block) {

@@ -83,10 +83,12 @@ public class WoodCommand implements TabExecutor {
             }
             String[] flags = Arrays.copyOfRange(args, argsLen - i, argsLen);
             String[] schemArgs = Arrays.copyOfRange(args, 0, argsLen - flags.length - 1);
-            wood = new Wood(p,commandSender, schemArgs, args[schemArgs.length], flags);
+            String target = args[schemArgs.length];
+            wood = new Wood(p,commandSender, schemArgs, target, flags);
         } else {                                                                                              // if no flags
             String[] schemArgs = Arrays.copyOfRange(args, 0, argsLen - 1);
-            wood = new Wood(p, commandSender, schemArgs, args[argsLen - 1]);
+            String target = args[argsLen - 1];
+            wood = new Wood(p, commandSender, schemArgs, target);
         }
 
         isIDpresent = false;

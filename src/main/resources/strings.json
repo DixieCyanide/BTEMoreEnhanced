@@ -4,6 +4,7 @@
     "bme.error.not-a-player": "You must be a player to use this command.",
     "bme.error.too-many-args": "Too many arguments.",
     "bme.error.invalid-arg": "Invalid argument.",
+    "bme.error.invalid-id": "Invalid legacy ID (\"%s\").",
     "bme.error.not-an-integer": "Arguments must be integers.",
     "bme.error.NaN": "Arguments must be numbers.",
     "bme.error.limit": "Number of blocks changed exceeds limit set.",
@@ -21,7 +22,8 @@
     "bme.error.schemcol.no-treepacks": "No treepack names detected, //wood and //treebr will not work correctly, please check config.",
     "bme.error.settings.invalid-block": "\"%s\" is not a valid block id.",
     "bme.error.settings.invalid-biome": "\"%s\" is not a valid biome id.",
-    "bme.warn": "warning",
+    "bme.error.debug": "\"%s\"",
+        "bme.warn": "warning",
     "bme.warn.no-selection": "Please make a region selection first.",
     "bme.warn.selection.wrong-selection": "Only poly or convex selections are supported.",
     "bme.warn.terraform.wrong-selection": "Only cuboid and poly selections are supported.",
@@ -31,6 +33,7 @@
     "bme.warn.wood.damaged": "Schematic is damaged or null.",
     "bme.warn.wood.selection.small": "Selection is too small.",
     "bme.warn.wood.not-found": "No suitable surface points found.",
+    "bme.warn.debug": "\"%s\"",
         "bme.info": "info",
     "bme.info.reloaded": "Plugin reloaded!",
     "bme.info.selection.edited": "Selection edited!",
@@ -42,5 +45,6 @@
     "bme.info.wood.done.time": "Took some time.",
     "bme.info.settings.changed": "Settings successfully updated.",
     "bme.info.settings.reset": "Settings reset to default.",
+    "bme.info.debug": "\"%s\"",
         "bme.end": "end"
 }
