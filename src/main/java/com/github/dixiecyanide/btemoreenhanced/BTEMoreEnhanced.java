@@ -25,7 +25,7 @@ import com.github.dixiecyanide.btemoreenhanced.schempicker.SchemCollector;
 import com.github.dixiecyanide.btemoreenhanced.update.UpdateChecker;
 import com.github.dixiecyanide.btemoreenhanced.update.UpdateNotification;
 import com.github.dixiecyanide.btemoreenhanced.userdata.UdUtils;
-
+import com.github.dixiecyanide.btemoreenhanced.userdata.Userdata;
 import com.github.dixiecyanide.btemoreenhanced.logger.Logger;
 import com.github.dixiecyanide.btemoreenhanced.events.CheckJoinPlayerUd;
 
@@ -39,7 +39,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class BTEMoreEnhanced extends JavaPlugin {
     private Logger chatLogger;
     private UdUtils udUtils;
-    private Map<UUID, Object> udMap = new HashMap<>();
+    private Map<UUID, Userdata> udMap = new HashMap<>();
 
     @Override
     public void onDisable() {
@@ -96,21 +96,21 @@ public class BTEMoreEnhanced extends JavaPlugin {
         return udUtils;
     }
 
-    public Map<UUID, Object> getOnlineUdMap() {
+    public Map<UUID, Userdata> getOnlineUdMap() {
 
         return udMap;
     }
 
-    public Map<String, Object> getOnlineUd(UUID id) {
-        return (Map<String, Object>) udMap.get(id);
+    public Userdata getOnlineUd(UUID id) {
+        return udMap.get(id);
     }
 
-    public void putOnlineUd(UUID id, Map<String, Object> map) {
+    public void putOnlineUd(UUID id, Userdata userdata) {
         if (udMap.containsKey(id)) {
-            udMap.replace(id, map);
+            udMap.replace(id, userdata);
             return;
         }
-        udMap.putIfAbsent(id, map);
+        udMap.putIfAbsent(id, userdata);
     }
 
     public void removeOnlineUd(UUID id) {

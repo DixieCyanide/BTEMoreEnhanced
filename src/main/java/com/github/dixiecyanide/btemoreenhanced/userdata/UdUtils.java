@@ -20,6 +20,7 @@
 package com.github.dixiecyanide.btemoreenhanced.userdata;
 
 import com.github.dixiecyanide.btemoreenhanced.BTEMoreEnhanced;
+import com.github.dixiecyanide.btemoreenhanced.utils.Utils;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -30,9 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -40,9 +39,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
-
-
-// TODO: fix unchecked casts
 
 
 public class UdUtils {
@@ -53,9 +49,15 @@ public class UdUtils {
     private static String defaultBlock = plugin.getConfig().getString("DefaultBlock");
     private static String defaultBiome = plugin.getConfig().getString("DefaultBiome");
     private File userdataDir;
+    private Yaml yaml;
 
     public UdUtils() {
         userdataDir = new File(plugin.getDataFolder() + File.separator + "userdata");
+        DumperOptions yamlOptions = new DumperOptions();
+        yamlOptions.setIndent(2);
+        yamlOptions.setPrettyFlow(true);
+        yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        this.yaml = new Yaml(yamlOptions);
     }
     
     public void checkUdFolder() {
@@ -78,19 +80,13 @@ public class UdUtils {
 
     public void writeDefaultUd(UUID id) {
         File userdataFile = new File(userdataDir + File.separator + id.toString() + ".yml");
-        Map<String, Object> dataMap = getDefaultUd();
+        Userdata userdata = getDefaultUd();
         PrintWriter writer;
-
-        DumperOptions options = new DumperOptions();
-        options.setIndent(2);
-        options.setPrettyFlow(true);
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         
         try {
             writer = new PrintWriter(userdataFile);
-            Yaml yaml = new Yaml(options);
-            yaml.dump(dataMap, writer);
-            bme.putOnlineUd(id, dataMap);
+            yaml.dump(userdata, writer);
+            bme.putOnlineUd(id, userdata);
         } catch (FileNotFoundException e) {
             createUd(id);
             writeDefaultUd(id);
@@ -99,105 +95,41 @@ public class UdUtils {
 
     public boolean updateUd(UUID id, String key, Object value) {
         File userdataFile = new File(userdataDir + File.separator + id.toString() + ".yml");
-        Map<String, Object> udMap = getUd(id);
+        Userdata userdata = getUd(id);
         PrintWriter writer;
         CommandSender commandSender = (CommandSender) Bukkit.getPlayer(id);
 
-        DumperOptions options = new DumperOptions();
-        options.setIndent(2);
-        options.setPrettyFlow(true);
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-
-        switch (key) {
-            case "Reach":
-                try {
-                    udMap.replace(key, Double.parseDouble(value.toString()));
-                } catch (ClassCastException e) {
-                    bme.getBMEChatLogger().error(commandSender, "bme.error.NaN", null);
-                    return false;
-                }
-            break;
-            case "TerrTop":
-                try {
-                    value = Integer.valueOf(value.toString());
-                } catch (NumberFormatException e) {
-                    bme.getBMEChatLogger().error(commandSender, "bme.error.not-an-integer", null);
-                    return false;
-                }
-                try {
-                    Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
-                    tfMap.replace(key, value);
-                    udMap.replace("Terraform", tfMap);
-                } catch (ClassCastException e) {
-                    udMap.replace("Terraform", getDefaultUd().get("Terraform"));
-                    return false;
-                    // throw wrror
-                }
-            break;
-            case "TerrBot":
-                try {
-                    value = Integer.valueOf(value.toString());
-                } catch (NumberFormatException e) {
-                    bme.getBMEChatLogger().error(commandSender, "bme.error.not-an-integer", null);
-                    return false;
-                }
-                try {
-                    Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
-                    tfMap.replace(key, value);
-                    udMap.replace("Terraform", tfMap);
-                } catch (Exception e) {
-                    udMap.replace("Terraform", getDefaultUd().get("Terraform"));
-                    return false;
-                    //throw error
-                }
-            break;
-            case "TerrBlock":
-                if (BlockTypes.get(value.toString()) == null) {
-                    bme.getBMEChatLogger().error(commandSender, "bme.error.settings.invalid-block", value.toString());
-                    return false;
-                }
-                try {
-                    Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
-                    tfMap.replace(key, value);
-                    udMap.replace("Terraform", tfMap);
-                } catch (Exception e) {
-                    udMap.replace("Terraform", getDefaultUd().get("Terraform"));
-                    return false;
-                }
-            break;
-            case "TerrBiome":
-                if (BiomeTypes.get(value.toString()) == null) {
-                    bme.getBMEChatLogger().error(commandSender, "bme.error.settings.invalid-biome", value.toString());
-                    return false;
-                }
-                try {
-                    Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
-                    tfMap.replace(key, value);
-                    udMap.replace("Terraform", tfMap);
-                } catch (Exception e) {
-                    udMap.replace("Terraform", getDefaultUd().get("Terraform"));
-                    return false;
-                }
-            break;
-            case "Terraform":
-                udMap.replace(key, value);
-            break;
-            case "UnusedTreepacks":
-                if (value.toString().equals("none")){
-                    value = "";
-                }
-                udMap.replace(key, List.of(value.toString().replace(" ", "").split(",")));
-            break;
-            default:
-                bme.getBMEChatLogger().error(commandSender, "bme.error.invalid-arg", null);
-            break;
+        try {
+            switch (key) {
+                case "Reach":
+                    userdata.setReach(Double.parseDouble(value.toString()));
+                case "TerrBlock": // this way it should automatically reject multiple ids
+                    value = Utils.FixSingleLegacyID(value.toString());
+                    userdata.getTerraformConfig().setTerrBlock(BlockTypes.get(value.toString()));
+                case "TerrBiome":
+                    userdata.getTerraformConfig().setTerrBiome(BiomeTypes.get(value.toString()));
+                case "TerrTop":
+                    userdata.getTerraformConfig().setTerrTop(Integer.parseInt(value.toString()));
+                case "TerrBot":
+                    userdata.getTerraformConfig().setTerrBot(Integer.parseInt(value.toString()));
+                case "UnusedTreepacks":
+                    if (value.toString().equals("none")){
+                        value = "";
+                    }
+                    userdata.setUnusedTreepacks(List.of(value.toString().replace(" ", "").split(",")));
+            }
+        } catch (NumberFormatException e) {
+            bme.getBMEChatLogger().error(commandSender, "bme.error.NaN", null);
+            return false;
+        } catch (NullPointerException e) {
+            bme.getBMEChatLogger().error(commandSender,  "bme.error.invalid-id", e.getMessage());
+            return false;
         }
-
+        
         try {
             writer = new PrintWriter(userdataFile);
-            Yaml yaml = new Yaml(options);
-            yaml.dump(udMap, writer);
-            bme.putOnlineUd(id, udMap);
+            yaml.dump(userdata, writer);
+            bme.putOnlineUd(id, userdata);
         } catch (FileNotFoundException e) {
             createUd(id);
             writeDefaultUd(id);
@@ -206,12 +138,12 @@ public class UdUtils {
         return true;
     }
 
-    public Map<String, Object> getUd(UUID id) {
+    public Userdata getUd(UUID id) {
         File userdataFile = new File(userdataDir + File.separator + id.toString() + ".yml");
         try {
             InputStream inputStream = new FileInputStream(userdataFile);
-            return new Yaml().load(inputStream);
-        } catch (FileNotFoundException e) {
+            return yaml.loadAs(inputStream, Userdata.class);
+        } catch (Exception e) {
             createUd(id);
             writeDefaultUd(id);
             return getDefaultUd();
@@ -219,68 +151,47 @@ public class UdUtils {
     }
 
     public Object getOnlineUdValue(UUID id, String key) {
-        Map<String, Object> udMap = bme.getOnlineUd(id);
+        Userdata userdata = bme.getOnlineUd(id);
         Object value = null;
 
         switch (key) {
             case "Reach":
-                value = udMap.get(key);
-            break;
-            case "TerrTop":
-                try {
-                    Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
-                    value = tfMap.get(key);
-                } catch (Exception e) {
-                    updateUd(id, "Terraform", getDefaultUd().get("Terraform"));
-                }
-            break;
-            case "TerrBot":
-                try {
-                    Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
-                    value = tfMap.get(key);
-                } catch (Exception e) {
-                    updateUd(id, "Terraform", getDefaultUd().get("Terraform"));
-                }
+                value = userdata.getReach();
             break;
             case "TerrBlock":
-                try {
-                    Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
-                    value = tfMap.get(key);
-                } catch (Exception e) {
-                    updateUd(id, "Terraform", getDefaultUd().get("Terraform"));
-                }
+                userdata.getTerraformConfig().getTerrBlock();  
             break;
             case "TerrBiome":
-                try {
-                    Map<String, Object> tfMap = (Map<String, Object>) udMap.get("Terraform");
-                    value = tfMap.get(key);
-                } catch (Exception e) {
-                    updateUd(id, "Terraform", getDefaultUd().get("Terraform"));
-                }
+                userdata.getTerraformConfig().getTerrBiome();  
+            break;  
+            case "TerrTop":
+                userdata.getTerraformConfig().getTerrTop();  
+            break;
+            case "TerrBot":
+                userdata.getTerraformConfig().getTerrBot(); 
             break;
             case "UnusedTreepacks":
-                value = udMap.get(key).toString().substring(1, udMap.get(key).toString().length() - 1);
+                userdata.getUnusedTreepacks();
             break;
-        
             default:
-                break;
+            break;
         }
-
         return value;
     }
 
-    public Map<String, Object> getDefaultUd() {
-        Map<String, Object> terraformMap = new HashMap<>();
-        terraformMap.put("TerrTop", defaultTopRemove);
-        terraformMap.put("TerrBot", defaultBotRemove);
-        terraformMap.put("TerrBlock", defaultBlock);
-        terraformMap.put("TerrBiome", defaultBiome);
-        
-        Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("Reach", -1);
-        dataMap.put("Terraform", terraformMap);
-        dataMap.put("UnusedTreepacks", new ArrayList<String>());
-        
-        return dataMap;
+    public Userdata getDefaultUd() {
+        Userdata userdata = new Userdata();
+        TerraformConfig tfCfg = new TerraformConfig();
+
+        tfCfg.setTerrBlock(BlockTypes.get(defaultBlock));
+        tfCfg.setTerrBiome(BiomeTypes.get(defaultBiome));
+        tfCfg.setTerrTop(defaultTopRemove);
+        tfCfg.setTerrBot(defaultBotRemove);
+
+        userdata.setReach(-1);
+        userdata.setTerraformConfig(tfCfg);
+        userdata.setUnusedTreepacks(new ArrayList<String>());
+
+        return userdata;
     }
 }
