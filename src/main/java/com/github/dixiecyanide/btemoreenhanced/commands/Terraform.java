@@ -174,7 +174,7 @@ public class Terraform implements TabExecutor {
                 return true;
             }
 
-            if (!biome.equals("none")) {
+            if (biome != null || !biome.equals("none")) {
                 BiomeCommands bc = new BiomeCommands();
                 reg.setMaximumY(10000); // such values so biome will be from top to bottom 
                 reg.setMinimumY(-1000);

@@ -420,6 +420,7 @@ public class Wood {
         } // TODO: better use some custom exception like "IvalidLegacyIdException" or something, but later
     }
 
+        // TODO: add block properties check
     private boolean matchesTarget(BlockType block) {
         for (String targetBlock : targetBlocks) {
             String blockID = block.getId().substring(10); // substring removes "minecratf:" thingy

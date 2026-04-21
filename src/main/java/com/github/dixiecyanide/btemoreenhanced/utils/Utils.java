@@ -45,23 +45,25 @@ public class Utils {
 
     public static String FixSingleLegacyID (String id) 
         throws NumberFormatException, NullPointerException {
-        String fixedId = "";
-        String legacyID = "0";
+        String fixedId = id;
+        String legacyId = "0";
         String legacyData = "0";
         // zeroes are here cuz id = 0 is air, and data = 0 works for any block and gives default state
         // i.e: 2 and 2:0 will give same block of grass (grass_block in modern id system)
         // i.e: 17 and 17:0 will give same block of oak log in the same orientation, while 17:1 will give spruce log
-        fixedId = id; // just returning modern id without any manipulations
+
+        // TODO: add check for modern block properties (the [] ones)
+        
         if (BlockTypes.get(id) == null) {    
             if (id.contains(":")){
-                legacyID = id.substring(0, id.indexOf(":"));
+                legacyId = id.substring(0, id.indexOf(":"));
                 legacyData = id.substring(id.indexOf(":") + 1);
             } else {
-                legacyID = id;
+                legacyId = id;
             }
 
             try {
-                BlockState BS = LM.getBlockFromLegacy(Integer.parseInt(legacyID), Integer.parseInt(legacyData));
+                BlockState BS = LM.getBlockFromLegacy(Integer.parseInt(legacyId), Integer.parseInt(legacyData));
                 BlockType BT = BS.getBlockType();
                 fixedId = BT.getId().substring(10); // substring removes "minecratf:" thingy
             } catch (NumberFormatException e) {

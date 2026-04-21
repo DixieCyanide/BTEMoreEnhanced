@@ -103,20 +103,26 @@ public class UdUtils {
             switch (key) {
                 case "Reach":
                     userdata.setReach(Double.parseDouble(value.toString()));
+                break;
                 case "TerrBlock": // this way it should automatically reject multiple ids
                     value = Utils.FixSingleLegacyID(value.toString());
-                    userdata.getTerraformConfig().setTerrBlock(BlockTypes.get(value.toString()));
+                    userdata.getTerraformConfig().setTerrBlock(BlockTypes.get(value.toString()).toString());
+                break;
                 case "TerrBiome":
-                    userdata.getTerraformConfig().setTerrBiome(BiomeTypes.get(value.toString()));
+                    userdata.getTerraformConfig().setTerrBiome(BiomeTypes.get(value.toString()).toString());
+                break;
                 case "TerrTop":
                     userdata.getTerraformConfig().setTerrTop(Integer.parseInt(value.toString()));
+                break;
                 case "TerrBot":
                     userdata.getTerraformConfig().setTerrBot(Integer.parseInt(value.toString()));
+                break;
                 case "UnusedTreepacks":
-                    if (value.toString().equals("none")){
+                    if (value == null || value.toString().equals("")){
                         value = "";
                     }
                     userdata.setUnusedTreepacks(List.of(value.toString().replace(" ", "").split(",")));
+                break;
             }
         } catch (NumberFormatException e) {
             bme.getBMEChatLogger().error(commandSender, "bme.error.NaN", null);
@@ -159,19 +165,19 @@ public class UdUtils {
                 value = userdata.getReach();
             break;
             case "TerrBlock":
-                userdata.getTerraformConfig().getTerrBlock();  
+                value = userdata.getTerraformConfig().getTerrBlock();  
             break;
             case "TerrBiome":
-                userdata.getTerraformConfig().getTerrBiome();  
+                value = userdata.getTerraformConfig().getTerrBiome();  
             break;  
             case "TerrTop":
-                userdata.getTerraformConfig().getTerrTop();  
+                value = userdata.getTerraformConfig().getTerrTop();  
             break;
             case "TerrBot":
-                userdata.getTerraformConfig().getTerrBot(); 
+                value = userdata.getTerraformConfig().getTerrBot(); 
             break;
             case "UnusedTreepacks":
-                userdata.getUnusedTreepacks();
+                value = userdata.getUnusedTreepacks();
             break;
             default:
             break;
@@ -183,8 +189,16 @@ public class UdUtils {
         Userdata userdata = new Userdata();
         TerraformConfig tfCfg = new TerraformConfig();
 
-        tfCfg.setTerrBlock(BlockTypes.get(defaultBlock));
-        tfCfg.setTerrBiome(BiomeTypes.get(defaultBiome));
+        if (BlockTypes.get(defaultBlock) == null) {
+            tfCfg.setTerrBlock("none");
+        } else {
+            tfCfg.setTerrBlock(BlockTypes.get(defaultBlock).toString());
+        }
+        if (BiomeTypes.get(defaultBiome) == null) {
+            tfCfg.setTerrBiome("none");
+        } else {
+            tfCfg.setTerrBiome(BiomeTypes.get(defaultBiome).toString());
+        }
         tfCfg.setTerrTop(defaultTopRemove);
         tfCfg.setTerrBot(defaultBotRemove);
 

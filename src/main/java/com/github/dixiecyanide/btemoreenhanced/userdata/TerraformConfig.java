@@ -19,30 +19,30 @@
 
 package com.github.dixiecyanide.btemoreenhanced.userdata;
 
-import com.sk89q.worldedit.world.biome.BiomeType;
-import com.sk89q.worldedit.world.block.BlockType;
-
 public class TerraformConfig {
-    private BlockType terrBlock;
-    private BiomeType terrBiome;
+    private String terrBlock;
+    private String terrBiome;
     private Integer terrTop;
     private Integer terrBot;
 
     public TerraformConfig() {}
 
-    public BlockType getTerrBlock() {
+    public String getTerrBlock() {
         return terrBlock;
     }
 
-    public void setTerrBlock(BlockType terrBlock) {
+    public void setTerrBlock(String terrBlock) {
+        if (terrBlock.contains(":")) {
+            terrBlock = terrBlock.substring(10);
+        }
         this.terrBlock = terrBlock;
     }
 
-    public BiomeType getTerrBiome() {
+    public String getTerrBiome() {
         return terrBiome;
     }
 
-    public void setTerrBiome(BiomeType terrBiome) {
+    public void setTerrBiome(String terrBiome) {
         this.terrBiome = terrBiome;
     }
 
