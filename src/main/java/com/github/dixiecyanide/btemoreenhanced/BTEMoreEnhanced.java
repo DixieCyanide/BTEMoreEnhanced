@@ -54,7 +54,7 @@ public class BTEMoreEnhanced extends JavaPlugin {
             getLogger().severe("Couldn't find FastAsyncWorldEdit plugin. Please check plugins.");
             Bukkit.getPluginManager().disablePlugin(BTEMoreEnhanced.getPlugin(BTEMoreEnhanced.class));
         }
-        String[] versionParts = Bukkit.getMinecraftVersion().split("\\.");
+        String[] versionParts = Bukkit.getBukkitVersion().split("-", 2)[0].split("\\.");
         Integer serverVersion = Integer.valueOf(versionParts[0].equals("1") ? versionParts[1] : versionParts[0]);
         saveDefaultConfig();
         getCommand("/wood").setExecutor(new WoodCommand());
